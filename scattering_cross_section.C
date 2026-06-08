@@ -4,11 +4,13 @@
 #include <cmath>
 #include <string>
 
-long double ep_cross_section_preedom_tegen_p(
+long double cross_section(
     long double p_beam_MeVc = 200.0L,  // MUSE beam momentum in MeV/c.
     long double theta_deg = 30.0L,    // Scattering angle in degrees, should be between 20 and 100 degrees.
     std::string lepton = "electron"    // Choose "electron" or "muon".
 ) {
+    // Formulas from Preedom & Tegen (1987)
+
     const long double alpha = 1.0L / 137.035999084L;       // Fine-structure constant alpha.
 
     const long double electron_mass = 0.0L;   // Electron rest mass in GeV/c^2.
