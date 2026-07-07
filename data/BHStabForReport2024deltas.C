@@ -11,7 +11,7 @@ void BHStabForReport2024deltas()
 {
     double runnum[2500], zeros[2500], te[2500], teunc[2500], tmu[2500], tmuunc[2500], tpi[2500], tpiunc[2500];
     double prunnum[2500],      pte[2500], pteunc[2500], ptmu[2500], ptmuunc[2500], ptpi[2500], ptpiunc[2500];
-    double fe[2500], feunc[2500], fmu[2500], fmuunc[2500], fpi[2500], fpiunc[2500]; 
+    double fe[2500], feunc[2500], fmu[2500], fmuunc[2500], fpi[2500], fpiunc[2500];
 	int j = 0;
     //int p=160;
     int p=115;
@@ -33,9 +33,9 @@ void BHStabForReport2024deltas()
     //all 2021
     //int i1 = 8940, i2 = 11334;
     //int i1 = 11200, i2 = 11250;
-    int i1 = 26370, i2 = 26664;
+    int i1 = 35566, i2 = 35572;
     for (int irun=i1; irun<i2; irun++) {
-        if( 
+        if(
             //remove calo calibration
             irun != 26502 && irun != 26503 && irun != 26504 && irun != 26505 && irun != 26506 &&
             irun != 26507 && irun != 26508 && irun != 26509 && irun != 26510 && irun != 26511 &&
@@ -50,18 +50,18 @@ void BHStabForReport2024deltas()
             //remove some positron trigger runs that mess up muon-electron RF time
             &&
             irun != 26462 && irun != 26463 && irun != 26464 && irun != 26465 && irun != 26466 &&
-            irun != 26467 && irun != 26468 && irun != 26469 && irun != 26470 && irun != 26471 && 
-            irun != 26472 
+            irun != 26467 && irun != 26468 && irun != 26469 && irun != 26470 && irun != 26471 &&
+            irun != 26472
 
             //
             //(irun<26938 || irun > 26873) &&
 
               /*&& irun != 14955 && irun != 14956 && irun != 14957
-               && irun != 15154 && irun != 15156 && irun != 15157 && irun != 15158 */ 
+               && irun != 15154 && irun != 15156 && irun != 15157 && irun != 15158 */
             )
         {
         //printf("j = %d  irun = %d \n",j,irun);
-		TFile *file = new TFile(Form("/data2/processed_fast_reduced/BH_detail/run%d.root",irun));
+		TFile *file = new TFile(Form("run%d.root",irun));
 
 		if ( file != NULL )  {
 
@@ -161,8 +161,8 @@ void BHStabForReport2024deltas()
     //TCanvas *c = new TCanvas("RFTimeDiffs","RFTimeDiffs", 1200, 300);
     //TCanvas *c = new TCanvas(Form("Plane_%s_InTimeStability_-210",plane.c_str()),Form("Plane_%s_InTimeStability_-210",plane.c_str()), 1200, 800);
     TCanvas *c0 = new TCanvas(Form("Plane_%s_OOT_e_RF_Stability_%04d",plane.c_str(),p),Form("Plane_%s_OOT_e_RF_Stability_%04d",plane.c_str(),p), 550, 400);
-    //c->Divide(3,2); 
-    //c->Divide(3,1); 
+    //c->Divide(3,2);
+    //c->Divide(3,1);
 
 	//c->cd(1);
     TGraphErrors *gr0 = new TGraphErrors(nprune,prunnum,pte,zeros,pteunc);
@@ -367,7 +367,7 @@ void BHStabForReport2024deltas()
     fracttot += p0;
     printf(" total particle fraction = %f \n",fracttot);
     */
- 
+
      // Build and Draw a legend
     //TLegend leg(.1,.7,.3,.9,"Mean Paddle Position");
     //leg.SetFillColor(0);
@@ -387,3 +387,6 @@ void BHStabForReport2024deltas()
 	///// TF1: https://root.cern.ch/doc/master/classTF1.html
 	///// TGraph: https://root.cern.ch/doc/master/classTGraph.html
 	///// TAxis: https://root.cern.ch/doc/master/classTAxis.html
+
+    // calculate peak positions for qdc_hit_BHC[paddle#][right] and BHD and tdc_coin_left_BHC[paddle#]-RF
+    // calculate uncertainity for each
