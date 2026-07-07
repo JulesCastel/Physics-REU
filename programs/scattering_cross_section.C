@@ -5,7 +5,7 @@
 #include <string>
 
 long double cross_section(
-    long double p_beam_MeVc = 200.0L,  // MUSE beam momentum in MeV/c.
+    long double p_beam_MeVc = 210.0L,  // MUSE beam momentum in MeV/c.
     long double theta_deg = 30.0L,    // Scattering angle in degrees, should be between 20 and 100 degrees.
     std::string lepton = "electron"    // Choose "electron" or "muon".
 ) {
