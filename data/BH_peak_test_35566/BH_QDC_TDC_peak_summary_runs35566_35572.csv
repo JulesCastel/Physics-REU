@@ -1,0 +1,407 @@
+run,plane,paddle,type,histogram,hist_path,found,fit_ok,fit_status,entries,peak,peak_uncertainty,sigma,sigma_uncertainty,amplitude,amplitude_uncertainty,chi2,ndf,fit_low,fit_high,message
+35566,BHC,00,QDC,qdc_hit_BHC00left,BHC/Paddle00/QDC/qdc_hit_BHC00left,1,1,0,2360,122.647777466,0.431581814551,11.6612024945,0.51249291781,43.8715105952,1.77614460049,56.8034413679,36,104.391719745,142.608280255,ok
+35566,BHC,01,QDC,qdc_hit_BHC01left,BHC/Paddle01/QDC/qdc_hit_BHC01left,1,1,0,3369,128.021051437,0.348746137456,13.7552193716,0.328785051539,53.6814217423,1.68557681279,83.1344820688,64,89.3789808917,155.621019108,ok
+35566,BHC,02,QDC,qdc_hit_BHC02left,BHC/Paddle02/QDC/qdc_hit_BHC02left,1,1,0,4473,132.218394589,0.308036375398,14.1905519621,0.296903372508,69.3790000643,1.90395418545,73.144019652,64,99.3789808917,165.621019108,ok
+35566,BHC,03,QDC,qdc_hit_BHC03left,BHC/Paddle03/QDC/qdc_hit_BHC03left,1,1,0,15224,133.970879693,0.203167609864,18.2482151658,0.196299392367,205.245556066,2.91397028784,229.380845168,86,88.9140127389,178.085987261,ok
+35566,BHC,04,QDC,qdc_hit_BHC04left,BHC/Paddle04/QDC/qdc_hit_BHC04left,1,1,0,76883,136.809939728,0.11033376963,21.4238409786,0.107235456377,764.102315809,5.19627204591,885.63087356,112,86.1751592357,200.824840764,ok
+35566,BHC,05,QDC,qdc_hit_BHC05left,BHC/Paddle05/QDC/qdc_hit_BHC05left,1,1,0,108221,135.648944578,0.11024343613,26.4675247998,0.10110199512,936.411270897,5.04720350051,807.922854493,138,67.4363057325,207.563694268,ok
+35566,BHC,06,QDC,qdc_hit_BHC06left,BHC/Paddle06/QDC/qdc_hit_BHC06left,1,1,0,131706,146.429962831,0.117649262942,30.0265120386,0.107460906,923.248318212,4.69933223213,1072.66087783,160,67.9713375796,231.02866242,ok
+35566,BHC,07,QDC,qdc_hit_BHC07left,BHC/Paddle07/QDC/qdc_hit_BHC07left,1,1,0,189839,143.447798609,0.0836196476405,27.285432878,0.0744658843048,1664.72491348,6.54565487344,1058.26367276,144,70.6146496815,218.385350318,ok
+35566,BHC,08,QDC,qdc_hit_BHC08left,BHC/Paddle08/QDC/qdc_hit_BHC08left,1,1,0,174466,120.446134377,0.0922104483666,28.2265436273,0.0845148316736,1408.98978541,5.99984608124,1478.25637687,152,46.7929936306,202.207006369,ok
+35566,BHC,09,QDC,qdc_hit_BHC09left,BHC/Paddle09/QDC/qdc_hit_BHC09left,1,1,0,129978,128.061537802,0.111155972961,27.3228740296,0.0983924619613,986.079672802,5.06383246388,1060.04339025,144,51.6146496815,199.385350318,ok
+35566,BHC,10,QDC,qdc_hit_BHC10left,BHC/Paddle10/QDC/qdc_hit_BHC10left,1,1,0,98801,132.481562339,0.116240344036,25.1411981195,0.106182834204,833.043713162,4.88213760122,653.738870251,126,64.5318471338,194.468152866,ok
+35566,BHC,11,QDC,qdc_hit_BHC11left,BHC/Paddle11/QDC/qdc_hit_BHC11left,1,1,0,80054,137.933416656,0.114910834698,22.5410713432,0.109495073013,756.071904527,4.98194221561,651.346527877,112,85.1751592357,199.824840764,ok
+35566,BHC,12,QDC,qdc_hit_BHC12left,BHC/Paddle12/QDC/qdc_hit_BHC12left,1,1,0,16734,129.180568215,0.180274243967,16.7610079929,0.179350884304,234.44998423,3.2711678413,222.675997522,78,89.7356687898,171.26433121,ok
+35566,BHC,13,QDC,qdc_hit_BHC13left,BHC/Paddle13/QDC/qdc_hit_BHC13left,1,1,0,5319,136.389448817,0.268180829789,13.2890177509,0.273821261669,93.0839792822,2.31942078861,83.3660981965,54,109.474522293,165.525477707,ok
+35566,BHC,14,QDC,qdc_hit_BHC14left,BHC/Paddle14/QDC/qdc_hit_BHC14left,1,1,0,3645,147.597216103,0.33890420355,13.5466463305,0.331166722845,57.8724633375,1.78233243778,51.0272643504,58,113.926751592,175.073248408,ok
+35566,BHC,15,QDC,qdc_hit_BHC15left,BHC/Paddle15/QDC/qdc_hit_BHC15left,1,1,0,2730,149.428088394,0.305001003325,11.8201362431,0.292783359493,58.0225828685,1.90635040565,61.67856543,54,120.474522293,176.525477707,ok
+35566,BHC,00,TDC,tdc_coin_left_BHC00-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35566,BHC,01,TDC,tdc_coin_left_BHC01-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35566,BHC,02,TDC,tdc_coin_left_BHC02-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35566,BHC,03,TDC,tdc_coin_left_BHC03-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35566,BHC,04,TDC,tdc_coin_left_BHC04-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35566,BHC,05,TDC,tdc_coin_left_BHC05-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35566,BHC,06,TDC,tdc_coin_left_BHC06-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35566,BHC,07,TDC,tdc_coin_left_BHC07-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35566,BHC,08,TDC,tdc_coin_left_BHC08-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35566,BHC,09,TDC,tdc_coin_left_BHC09-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35566,BHC,10,TDC,tdc_coin_left_BHC10-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35566,BHC,11,TDC,tdc_coin_left_BHC11-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35566,BHC,12,TDC,tdc_coin_left_BHC12-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35566,BHC,13,TDC,tdc_coin_left_BHC13-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35566,BHC,14,TDC,tdc_coin_left_BHC14-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35566,BHC,15,TDC,tdc_coin_left_BHC15-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35566,BHD,00,QDC,qdc_hit_BHD00left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35566,BHD,01,QDC,qdc_hit_BHD01left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35566,BHD,02,QDC,qdc_hit_BHD02left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35566,BHD,03,QDC,qdc_hit_BHD03left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35566,BHD,04,QDC,qdc_hit_BHD04left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35566,BHD,05,QDC,qdc_hit_BHD05left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35566,BHD,06,QDC,qdc_hit_BHD06left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35566,BHD,07,QDC,qdc_hit_BHD07left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35566,BHD,08,QDC,qdc_hit_BHD08left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35566,BHD,09,QDC,qdc_hit_BHD09left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35566,BHD,10,QDC,qdc_hit_BHD10left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35566,BHD,11,QDC,qdc_hit_BHD11left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35566,BHD,12,QDC,qdc_hit_BHD12left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35566,BHD,00,TDC,tdc_coin_left_BHD00-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35566,BHD,01,TDC,tdc_coin_left_BHD01-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35566,BHD,02,TDC,tdc_coin_left_BHD02-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35566,BHD,03,TDC,tdc_coin_left_BHD03-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35566,BHD,04,TDC,tdc_coin_left_BHD04-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35566,BHD,05,TDC,tdc_coin_left_BHD05-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35566,BHD,06,TDC,tdc_coin_left_BHD06-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35566,BHD,07,TDC,tdc_coin_left_BHD07-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35566,BHD,08,TDC,tdc_coin_left_BHD08-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35566,BHD,09,TDC,tdc_coin_left_BHD09-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35566,BHD,10,TDC,tdc_coin_left_BHD10-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35566,BHD,11,TDC,tdc_coin_left_BHD11-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35566,BHD,12,TDC,tdc_coin_left_BHD12-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35567,BHC,00,QDC,qdc_hit_BHC00left,BHC/Paddle00/QDC/qdc_hit_BHC00left,1,1,0,2241,122.81708819,0.401839765104,11.8932697171,0.43236180944,43.329032715,1.69353321428,46.3015825871,42,100.570063694,146.429936306,ok
+35567,BHC,01,QDC,qdc_hit_BHC01left,BHC/Paddle01/QDC/qdc_hit_BHC01left,1,1,0,3291,128.097863225,0.355156892508,13.7482126348,0.364228050349,51.4427207624,1.70730630489,90.2930268705,60,95.652866242,159.347133758,ok
+35567,BHC,02,QDC,qdc_hit_BHC02left,BHC/Paddle02/QDC/qdc_hit_BHC02left,1,1,0,4605,132.247548395,0.308227890831,14.5852775261,0.305859750246,69.5070286776,1.90973094779,109.76679223,70,99.5573248408,173.442675159,ok
+35567,BHC,03,QDC,qdc_hit_BHC03left,BHC/Paddle03/QDC/qdc_hit_BHC03left,1,1,0,15167,133.234828292,0.195889669667,17.7703089963,0.187096995904,209.135348413,2.96476815474,194.797701723,86,88.9140127389,178.085987261,ok
+35567,BHC,04,QDC,qdc_hit_BHC04left,BHC/Paddle04/QDC/qdc_hit_BHC04left,1,1,0,76608,136.269869562,0.109416921219,21.313452762,0.101397982331,764.625164101,5.10257010093,552.311531079,110,80.449044586,192.550955414,ok
+35567,BHC,05,QDC,qdc_hit_BHC05left,BHC/Paddle05/QDC/qdc_hit_BHC05left,1,1,0,107783,135.420983866,0.109339115024,26.1024801642,0.0998151326931,947.157592704,5.09809530137,682.492848275,134,63.7101910828,201.289808917,ok
+35567,BHC,06,QDC,qdc_hit_BHC06left,BHC/Paddle06/QDC/qdc_hit_BHC06left,1,1,0,131838,146.44937094,0.118950240356,29.978055962,0.110663532429,918.732326974,4.71950581829,945.619029884,154,71.5191082803,229.48089172,ok
+35567,BHC,07,QDC,qdc_hit_BHC07left,BHC/Paddle07/QDC/qdc_hit_BHC07left,1,1,0,189358,143.318475442,0.0838522258409,27.4401446972,0.073973306481,1650.30641492,6.48052121525,997.989721721,148,67.3407643312,217.659235669,ok
+35567,BHC,08,QDC,qdc_hit_BHC08left,BHC/Paddle08/QDC/qdc_hit_BHC08left,1,1,0,174066,120.607377875,0.0919095121929,27.7992472176,0.0842136897534,1426.59105835,6.06597558837,1111.13241281,142,49.8885350318,195.111464968,ok
+35567,BHC,09,QDC,qdc_hit_BHC09left,BHC/Paddle09/QDC/qdc_hit_BHC09left,1,1,0,129791,128.236522844,0.11044914775,26.9276145278,0.102070009546,1000.12287468,5.1943904584,880.213495286,132,61.9840764331,197.015923567,ok
+35567,BHC,10,QDC,qdc_hit_BHC10left,BHC/Paddle10/QDC/qdc_hit_BHC10left,1,1,0,98825,132.738950152,0.116229101587,25.2314761493,0.106629198994,836.129712955,4.89342827517,721.283241609,126,66.5318471338,196.468152866,ok
+35567,BHC,11,QDC,qdc_hit_BHC11left,BHC/Paddle11/QDC/qdc_hit_BHC11left,1,1,0,80609,138.095475707,0.114036122247,22.1405098194,0.107908873506,776.139372535,5.06260607255,437.729800829,104,85.9968152866,193.003184713,ok
+35567,BHC,12,QDC,qdc_hit_BHC12left,BHC/Paddle12/QDC/qdc_hit_BHC12left,1,1,0,16621,129.847588523,0.185057176371,17.3024905352,0.188791104702,227.315444871,3.21903851035,285.574285762,84,91.1878980892,177.812101911,ok
+35567,BHC,13,QDC,qdc_hit_BHC13left,BHC/Paddle13/QDC/qdc_hit_BHC13left,1,1,0,5249,136.615714904,0.285650248992,14.4373293834,0.285753319355,85.3787202264,2.13377158946,100.126545018,64,101.378980892,167.621019108,ok
+35567,BHC,14,QDC,qdc_hit_BHC14left,BHC/Paddle14/QDC/qdc_hit_BHC14left,1,1,0,3551,148.654162128,0.351234430534,13.1555800659,0.340154955212,57.5705866996,1.77907103346,67.4708538836,50,120.748407643,174.251592357,ok
+35567,BHC,15,QDC,qdc_hit_BHC15left,BHC/Paddle15/QDC/qdc_hit_BHC15left,1,1,0,2696,149.954689226,0.331842163262,11.9332204347,0.337481720332,55.2103383841,1.8961655464,56.3180257725,50,120.748407643,174.251592357,ok
+35567,BHC,00,TDC,tdc_coin_left_BHC00-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35567,BHC,01,TDC,tdc_coin_left_BHC01-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35567,BHC,02,TDC,tdc_coin_left_BHC02-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35567,BHC,03,TDC,tdc_coin_left_BHC03-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35567,BHC,04,TDC,tdc_coin_left_BHC04-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35567,BHC,05,TDC,tdc_coin_left_BHC05-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35567,BHC,06,TDC,tdc_coin_left_BHC06-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35567,BHC,07,TDC,tdc_coin_left_BHC07-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35567,BHC,08,TDC,tdc_coin_left_BHC08-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35567,BHC,09,TDC,tdc_coin_left_BHC09-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35567,BHC,10,TDC,tdc_coin_left_BHC10-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35567,BHC,11,TDC,tdc_coin_left_BHC11-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35567,BHC,12,TDC,tdc_coin_left_BHC12-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35567,BHC,13,TDC,tdc_coin_left_BHC13-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35567,BHC,14,TDC,tdc_coin_left_BHC14-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35567,BHC,15,TDC,tdc_coin_left_BHC15-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35567,BHD,00,QDC,qdc_hit_BHD00left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35567,BHD,01,QDC,qdc_hit_BHD01left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35567,BHD,02,QDC,qdc_hit_BHD02left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35567,BHD,03,QDC,qdc_hit_BHD03left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35567,BHD,04,QDC,qdc_hit_BHD04left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35567,BHD,05,QDC,qdc_hit_BHD05left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35567,BHD,06,QDC,qdc_hit_BHD06left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35567,BHD,07,QDC,qdc_hit_BHD07left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35567,BHD,08,QDC,qdc_hit_BHD08left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35567,BHD,09,QDC,qdc_hit_BHD09left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35567,BHD,10,QDC,qdc_hit_BHD10left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35567,BHD,11,QDC,qdc_hit_BHD11left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35567,BHD,12,QDC,qdc_hit_BHD12left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35567,BHD,00,TDC,tdc_coin_left_BHD00-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35567,BHD,01,TDC,tdc_coin_left_BHD01-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35567,BHD,02,TDC,tdc_coin_left_BHD02-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35567,BHD,03,TDC,tdc_coin_left_BHD03-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35567,BHD,04,TDC,tdc_coin_left_BHD04-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35567,BHD,05,TDC,tdc_coin_left_BHD05-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35567,BHD,06,TDC,tdc_coin_left_BHD06-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35567,BHD,07,TDC,tdc_coin_left_BHD07-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35567,BHD,08,TDC,tdc_coin_left_BHD08-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35567,BHD,09,TDC,tdc_coin_left_BHD09-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35567,BHD,10,TDC,tdc_coin_left_BHD10-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35567,BHD,11,TDC,tdc_coin_left_BHD11-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35567,BHD,12,TDC,tdc_coin_left_BHD12-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35568,BHC,00,QDC,qdc_hit_BHC00left,BHC/Paddle00/QDC/qdc_hit_BHC00left,1,1,0,2290,122.636341364,0.356867653232,12.1527761471,0.331300732108,44.4031013779,1.61629163164,47.7908325762,54,93.474522293,149.525477707,ok
+35568,BHC,01,QDC,qdc_hit_BHC01left,BHC/Paddle01/QDC/qdc_hit_BHC01left,1,1,0,3205,128.126294865,0.373671742585,13.8188024319,0.385724202211,51.2303180653,1.69641068234,49.1756608388,56,96.2006369427,154.799363057,ok
+35568,BHC,02,QDC,qdc_hit_BHC02left,BHC/Paddle02/QDC/qdc_hit_BHC02left,1,1,0,4387,132.689193659,0.302670690802,13.3357606983,0.314944139062,70.4591797386,2.04191519847,95.9266223602,58,105.926751592,167.073248408,ok
+35568,BHC,03,QDC,qdc_hit_BHC03left,BHC/Paddle03/QDC/qdc_hit_BHC03left,1,1,0,15169,133.385218179,0.198688082707,18.0541042801,0.187657081193,204.665448971,2.9005487673,224.533952327,92,81.3662420382,175.633757962,ok
+35568,BHC,04,QDC,qdc_hit_BHC04left,BHC/Paddle04/QDC/qdc_hit_BHC04left,1,1,0,77062,136.465629372,0.109800998661,21.3931937414,0.102867479906,764.71354951,5.11634852694,589.14072857,110,82.449044586,194.550955414,ok
+35568,BHC,05,QDC,qdc_hit_BHC05left,BHC/Paddle05/QDC/qdc_hit_BHC05left,1,1,0,107555,135.605475801,0.111550474039,26.524106354,0.104698940525,930.048741236,5.07731226609,996.833298317,138,71.4363057325,211.563694268,ok
+35568,BHC,06,QDC,qdc_hit_BHC06left,BHC/Paddle06/QDC/qdc_hit_BHC06left,1,1,0,131531,146.174833556,0.11867444792,29.880289656,0.108115009024,915.4991881,4.67781250227,763.779665418,154,67.5191082803,225.48089172,ok
+35568,BHC,07,QDC,qdc_hit_BHC07left,BHC/Paddle07/QDC/qdc_hit_BHC07left,1,1,0,189767,143.257740647,0.0835597898003,27.3513027915,0.0754754050059,1659.73657743,6.5743074014,1399.23994998,148,72.3407643312,222.659235669,ok
+35568,BHC,08,QDC,qdc_hit_BHC08left,BHC/Paddle08/QDC/qdc_hit_BHC08left,1,1,0,174128,120.434938298,0.0911661438538,27.8169018766,0.0807363954581,1418.75676497,5.97550358251,917.695479352,150,40.0668789809,192.933121019,ok
+35568,BHC,09,QDC,qdc_hit_BHC09left,BHC/Paddle09/QDC/qdc_hit_BHC09left,1,1,0,129402,128.12105899,0.108992484228,26.5952588825,0.0980222820907,1003.00423972,5.18438644093,871.911470565,134,58.7101910828,196.289808917,ok
+35568,BHC,10,QDC,qdc_hit_BHC10left,BHC/Paddle10/QDC/qdc_hit_BHC10left,1,1,0,98380,133.257018436,0.117437335598,25.838782223,0.108974858367,814.161790303,4.82013990098,1042.79280433,138,64.4363057325,204.563694268,ok
+35568,BHC,11,QDC,qdc_hit_BHC11left,BHC/Paddle11/QDC/qdc_hit_BHC11left,1,1,0,79636,137.969618217,0.1131859017,22.3170160532,0.10527679285,760.2704984,4.97336410355,553.91647824,112,80.1751592357,194.824840764,ok
+35568,BHC,12,QDC,qdc_hit_BHC12left,BHC/Paddle12/QDC/qdc_hit_BHC12left,1,1,0,16470,129.459608409,0.179844869649,16.6567211502,0.174140306682,232.673716267,3.24084665747,177.372543718,84,79.1878980892,165.812101911,ok
+35568,BHC,13,QDC,qdc_hit_BHC13left,BHC/Paddle13/QDC/qdc_hit_BHC13left,1,1,0,5205,136.646314286,0.27226897601,13.6013506574,0.283179698463,86.5275400638,2.24600442305,125.870623516,60,103.652866242,167.347133758,ok
+35568,BHC,14,QDC,qdc_hit_BHC14left,BHC/Paddle14/QDC/qdc_hit_BHC14left,1,1,0,3594,148.087166179,0.351060396335,13.3201130323,0.354648395226,56.9168679111,1.80510867136,61.2331960887,54,116.474522293,172.525477707,ok
+35568,BHC,15,QDC,qdc_hit_BHC15left,BHC/Paddle15/QDC/qdc_hit_BHC15left,1,1,0,2663,150.626777224,0.333971667498,11.3622568669,0.331909138726,56.2686159571,1.91360474022,45.6977129205,42,127.570063694,173.429936306,ok
+35568,BHC,00,TDC,tdc_coin_left_BHC00-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35568,BHC,01,TDC,tdc_coin_left_BHC01-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35568,BHC,02,TDC,tdc_coin_left_BHC02-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35568,BHC,03,TDC,tdc_coin_left_BHC03-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35568,BHC,04,TDC,tdc_coin_left_BHC04-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35568,BHC,05,TDC,tdc_coin_left_BHC05-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35568,BHC,06,TDC,tdc_coin_left_BHC06-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35568,BHC,07,TDC,tdc_coin_left_BHC07-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35568,BHC,08,TDC,tdc_coin_left_BHC08-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35568,BHC,09,TDC,tdc_coin_left_BHC09-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35568,BHC,10,TDC,tdc_coin_left_BHC10-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35568,BHC,11,TDC,tdc_coin_left_BHC11-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35568,BHC,12,TDC,tdc_coin_left_BHC12-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35568,BHC,13,TDC,tdc_coin_left_BHC13-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35568,BHC,14,TDC,tdc_coin_left_BHC14-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35568,BHC,15,TDC,tdc_coin_left_BHC15-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35568,BHD,00,QDC,qdc_hit_BHD00left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35568,BHD,01,QDC,qdc_hit_BHD01left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35568,BHD,02,QDC,qdc_hit_BHD02left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35568,BHD,03,QDC,qdc_hit_BHD03left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35568,BHD,04,QDC,qdc_hit_BHD04left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35568,BHD,05,QDC,qdc_hit_BHD05left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35568,BHD,06,QDC,qdc_hit_BHD06left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35568,BHD,07,QDC,qdc_hit_BHD07left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35568,BHD,08,QDC,qdc_hit_BHD08left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35568,BHD,09,QDC,qdc_hit_BHD09left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35568,BHD,10,QDC,qdc_hit_BHD10left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35568,BHD,11,QDC,qdc_hit_BHD11left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35568,BHD,12,QDC,qdc_hit_BHD12left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35568,BHD,00,TDC,tdc_coin_left_BHD00-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35568,BHD,01,TDC,tdc_coin_left_BHD01-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35568,BHD,02,TDC,tdc_coin_left_BHD02-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35568,BHD,03,TDC,tdc_coin_left_BHD03-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35568,BHD,04,TDC,tdc_coin_left_BHD04-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35568,BHD,05,TDC,tdc_coin_left_BHD05-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35568,BHD,06,TDC,tdc_coin_left_BHD06-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35568,BHD,07,TDC,tdc_coin_left_BHD07-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35568,BHD,08,TDC,tdc_coin_left_BHD08-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35568,BHD,09,TDC,tdc_coin_left_BHD09-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35568,BHD,10,TDC,tdc_coin_left_BHD10-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35568,BHD,11,TDC,tdc_coin_left_BHD11-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35568,BHD,12,TDC,tdc_coin_left_BHD12-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35569,BHC,00,QDC,qdc_hit_BHC00left,BHC/Paddle00/QDC/qdc_hit_BHC00left,1,1,0,2298,122.011506015,0.379604707881,13.0659641157,0.362468021568,41.1849372488,1.52289726067,49.6432487913,60,90.652866242,154.347133758,ok
+35569,BHC,01,QDC,qdc_hit_BHC01left,BHC/Paddle01/QDC/qdc_hit_BHC01left,1,1,0,3293,128.365364637,0.415590642538,11.4690160586,0.534098870101,56.3169459498,2.09880382968,50.1929978175,32,109.665605096,145.334394904,ok
+35569,BHC,02,QDC,qdc_hit_BHC02left,BHC/Paddle02/QDC/qdc_hit_BHC02left,1,1,0,4415,132.20522948,0.313829017941,13.910219189,0.324126427607,69.8098682352,1.98236146235,104.536617535,60,104.652866242,168.347133758,ok
+35569,BHC,03,QDC,qdc_hit_BHC03left,BHC/Paddle03/QDC/qdc_hit_BHC03left,1,1,0,15110,133.025000617,0.204523610188,17.8639614093,0.197745012027,205.923976875,2.94829737816,205.428370349,84,84.1878980892,170.812101911,ok
+35569,BHC,04,QDC,qdc_hit_BHC04left,BHC/Paddle04/QDC/qdc_hit_BHC04left,1,1,0,77059,136.225354648,0.11014322779,20.793538638,0.104597729187,777.38800161,5.23713690433,447.374392794,98,86.5445859873,188.455414013,ok
+35569,BHC,05,QDC,qdc_hit_BHC05left,BHC/Paddle05/QDC/qdc_hit_BHC05left,1,1,0,107956,135.590681256,0.110173521979,26.0722651583,0.101415369435,947.200559228,5.11444259806,705.407011975,130,68.2579617834,200.742038217,ok
+35569,BHC,06,QDC,qdc_hit_BHC06left,BHC/Paddle06/QDC/qdc_hit_BHC06left,1,1,0,132059,145.965783881,0.118921962742,30.1698265076,0.107858097121,913.456703413,4.64505565287,819.285507331,158,65.2452229299,225.75477707,ok
+35569,BHC,07,QDC,qdc_hit_BHC07left,BHC/Paddle07/QDC/qdc_hit_BHC07left,1,1,0,189659,143.263664862,0.0837183218713,27.066723465,0.0745698133009,1670.04427489,6.57700643142,907.127630053,140,75.1624203822,217.837579618,ok
+35569,BHC,08,QDC,qdc_hit_BHC08left,BHC/Paddle08/QDC/qdc_hit_BHC08left,1,1,0,173788,120.455194061,0.0919657558012,27.9673144282,0.083427113975,1408.9785186,5.9962966713,1187.85471896,148,46.3407643312,196.659235669,ok
+35569,BHC,09,QDC,qdc_hit_BHC09left,BHC/Paddle09/QDC/qdc_hit_BHC09left,1,1,0,129239,128.319545882,0.110624254893,27.2160591202,0.0976628013063,985.195913463,5.05778879012,876.048066935,144,50.6146496815,198.385350318,ok
+35569,BHC,10,QDC,qdc_hit_BHC10left,BHC/Paddle10/QDC/qdc_hit_BHC10left,1,1,0,98254,132.594166652,0.117411974687,25.6109358841,0.108317206204,814.932564649,4.81584299751,819.111654982,134,59.7101910828,197.289808917,ok
+35569,BHC,11,QDC,qdc_hit_BHC11left,BHC/Paddle11/QDC/qdc_hit_BHC11left,1,1,0,79699,137.731914934,0.113114909771,22.6867919723,0.102832724272,753.817725753,4.87536032127,583.020310782,120,76.3535031847,198.646496815,ok
+35569,BHC,12,QDC,qdc_hit_BHC12left,BHC/Paddle12/QDC/qdc_hit_BHC12left,1,1,0,16579,128.993548656,0.182116829332,17.0842704286,0.175819482931,227.531982924,3.16364604691,234.524161111,84,85.1878980892,171.812101911,ok
+35569,BHC,13,QDC,qdc_hit_BHC13left,BHC/Paddle13/QDC/qdc_hit_BHC13left,1,1,0,5242,136.535302899,0.262274810501,14.0677221087,0.26693521263,86.9614500585,2.22046588065,177.519696301,74,98.2834394904,174.71656051,ok
+35569,BHC,14,QDC,qdc_hit_BHC14left,BHC/Paddle14/QDC/qdc_hit_BHC14left,1,1,0,3522,147.72702796,0.340700855481,13.4675494663,0.34910196835,56.0157018003,1.80307604707,98.3582531514,60,110.652866242,174.347133758,ok
+35569,BHC,15,QDC,qdc_hit_BHC15left,BHC/Paddle15/QDC/qdc_hit_BHC15left,1,1,0,2766,149.097672404,0.312691737796,12.4156207968,0.317119411684,54.8754611167,1.86802659637,99.2753445524,64,112.378980892,178.621019108,ok
+35569,BHC,00,TDC,tdc_coin_left_BHC00-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35569,BHC,01,TDC,tdc_coin_left_BHC01-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35569,BHC,02,TDC,tdc_coin_left_BHC02-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35569,BHC,03,TDC,tdc_coin_left_BHC03-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35569,BHC,04,TDC,tdc_coin_left_BHC04-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35569,BHC,05,TDC,tdc_coin_left_BHC05-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35569,BHC,06,TDC,tdc_coin_left_BHC06-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35569,BHC,07,TDC,tdc_coin_left_BHC07-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35569,BHC,08,TDC,tdc_coin_left_BHC08-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35569,BHC,09,TDC,tdc_coin_left_BHC09-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35569,BHC,10,TDC,tdc_coin_left_BHC10-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35569,BHC,11,TDC,tdc_coin_left_BHC11-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35569,BHC,12,TDC,tdc_coin_left_BHC12-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35569,BHC,13,TDC,tdc_coin_left_BHC13-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35569,BHC,14,TDC,tdc_coin_left_BHC14-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35569,BHC,15,TDC,tdc_coin_left_BHC15-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35569,BHD,00,QDC,qdc_hit_BHD00left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35569,BHD,01,QDC,qdc_hit_BHD01left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35569,BHD,02,QDC,qdc_hit_BHD02left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35569,BHD,03,QDC,qdc_hit_BHD03left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35569,BHD,04,QDC,qdc_hit_BHD04left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35569,BHD,05,QDC,qdc_hit_BHD05left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35569,BHD,06,QDC,qdc_hit_BHD06left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35569,BHD,07,QDC,qdc_hit_BHD07left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35569,BHD,08,QDC,qdc_hit_BHD08left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35569,BHD,09,QDC,qdc_hit_BHD09left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35569,BHD,10,QDC,qdc_hit_BHD10left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35569,BHD,11,QDC,qdc_hit_BHD11left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35569,BHD,12,QDC,qdc_hit_BHD12left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35569,BHD,00,TDC,tdc_coin_left_BHD00-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35569,BHD,01,TDC,tdc_coin_left_BHD01-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35569,BHD,02,TDC,tdc_coin_left_BHD02-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35569,BHD,03,TDC,tdc_coin_left_BHD03-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35569,BHD,04,TDC,tdc_coin_left_BHD04-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35569,BHD,05,TDC,tdc_coin_left_BHD05-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35569,BHD,06,TDC,tdc_coin_left_BHD06-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35569,BHD,07,TDC,tdc_coin_left_BHD07-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35569,BHD,08,TDC,tdc_coin_left_BHD08-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35569,BHD,09,TDC,tdc_coin_left_BHD09-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35569,BHD,10,TDC,tdc_coin_left_BHD10-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35569,BHD,11,TDC,tdc_coin_left_BHD11-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35569,BHD,12,TDC,tdc_coin_left_BHD12-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35570,BHC,00,QDC,qdc_hit_BHC00left,BHC/Paddle00/QDC/qdc_hit_BHC00left,1,1,0,2290,122.800210138,0.59695076879,11.9774960042,0.863559706002,41.0103742307,1.8364586575,30.7158991301,28,106.213375796,136.786624204,ok
+35570,BHC,01,QDC,qdc_hit_BHC01left,BHC/Paddle01/QDC/qdc_hit_BHC01left,1,1,0,3229,128.201710792,0.336533825081,13.0983486702,0.326945937318,52.639856336,1.73266544057,60.8617601741,60,95.652866242,159.347133758,ok
+35570,BHC,02,QDC,qdc_hit_BHC02left,BHC/Paddle02/QDC/qdc_hit_BHC02left,1,1,0,4362,132.135389653,0.308235019035,13.6027043863,0.293106059511,68.8510247717,1.91498553634,73.0183812586,58,101.926751592,163.073248408,ok
+35570,BHC,03,QDC,qdc_hit_BHC03left,BHC/Paddle03/QDC/qdc_hit_BHC03left,1,1,0,15019,133.521531492,0.199440848653,17.773818267,0.195423426273,203.605182774,2.95053374514,208.467939634,84,90.1878980892,176.812101911,ok
+35570,BHC,04,QDC,qdc_hit_BHC04left,BHC/Paddle04/QDC/qdc_hit_BHC04left,1,1,0,76251,135.948439555,0.0995952840807,19.0502479326,0.0939543099718,836.179842817,5.68074997227,603.582873678,96,88.8184713376,188.181528662,ok
+35570,BHC,05,QDC,qdc_hit_BHC05left,BHC/Paddle05/QDC/qdc_hit_BHC05left,1,1,0,97072,134.317102412,0.0992130697186,21.4110215755,0.0928894413067,956.38473891,5.70763818488,658.383888846,106,79.7229299363,189.277070064,ok
+35570,BHC,06,QDC,qdc_hit_BHC06left,BHC/Paddle06/QDC/qdc_hit_BHC06left,1,1,0,124727,146.279540516,0.103047296566,24.8814417227,0.0958363743344,1004.70270938,5.42567858235,974.441907218,130,82.2579617834,214.742038217,ok
+35570,BHC,07,QDC,qdc_hit_BHC07left,BHC/Paddle07/QDC/qdc_hit_BHC07left,1,1,0,156076,143.012074651,0.085167679096,23.5442600082,0.0778535516056,1407.22673642,6.54282284965,981.281542127,120,83.3535031847,205.646496815,ok
+35570,BHC,08,QDC,qdc_hit_BHC08left,BHC/Paddle08/QDC/qdc_hit_BHC08left,1,1,0,152685,119.961881325,0.0869008240101,23.5813652822,0.0792178612448,1336.81142151,6.37472238995,972.829165636,124,53.8057324841,181.194267516,ok
+35570,BHC,09,QDC,qdc_hit_BHC09left,BHC/Paddle09/QDC/qdc_hit_BHC09left,1,1,0,125176,127.259575594,0.0927281524518,21.918622455,0.0858281798407,1141.68757254,6.17354323126,1045.49125566,110,72.449044586,184.550955414,ok
+35570,BHC,10,QDC,qdc_hit_BHC10left,BHC/Paddle10/QDC/qdc_hit_BHC10left,1,1,0,93289,131.870099179,0.096922343615,20.1813100435,0.08881906561,946.994536513,5.81822587964,630.900800054,102,78.2707006369,182.729299363,ok
+35570,BHC,11,QDC,qdc_hit_BHC11left,BHC/Paddle11/QDC/qdc_hit_BHC11left,1,1,0,77250,137.536693356,0.104110438961,19.8110842315,0.0992506983973,815.968362576,5.52211255769,625.308158231,98,91.5445859873,193.455414013,ok
+35570,BHC,12,QDC,qdc_hit_BHC12left,BHC/Paddle12/QDC/qdc_hit_BHC12left,1,1,0,16410,129.420506926,0.185151364087,17.0916182415,0.185491323923,225.638384318,3.19873548902,243.860913995,82,91.4617834395,175.538216561,ok
+35570,BHC,13,QDC,qdc_hit_BHC13left,BHC/Paddle13/QDC/qdc_hit_BHC13left,1,1,0,5345,136.882653444,0.265980444817,13.8069354061,0.265230803871,89.6301943278,2.23629263647,112.783577665,64,102.378980892,168.621019108,ok
+35570,BHC,14,QDC,qdc_hit_BHC14left,BHC/Paddle14/QDC/qdc_hit_BHC14left,1,1,0,3662,148.864225743,0.345773229714,14.5213372448,0.358023377866,55.8764010392,1.75759954044,101.967241124,70,117.557324841,191.442675159,ok
+35570,BHC,15,QDC,qdc_hit_BHC15left,BHC/Paddle15/QDC/qdc_hit_BHC15left,1,1,0,2699,149.302925863,0.297044378696,10.5817322742,0.286831645255,60.6937815025,2.04268247621,49.7451629968,42,125.570063694,171.429936306,ok
+35570,BHC,00,TDC,tdc_coin_left_BHC00-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35570,BHC,01,TDC,tdc_coin_left_BHC01-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35570,BHC,02,TDC,tdc_coin_left_BHC02-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35570,BHC,03,TDC,tdc_coin_left_BHC03-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35570,BHC,04,TDC,tdc_coin_left_BHC04-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35570,BHC,05,TDC,tdc_coin_left_BHC05-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35570,BHC,06,TDC,tdc_coin_left_BHC06-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35570,BHC,07,TDC,tdc_coin_left_BHC07-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35570,BHC,08,TDC,tdc_coin_left_BHC08-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35570,BHC,09,TDC,tdc_coin_left_BHC09-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35570,BHC,10,TDC,tdc_coin_left_BHC10-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35570,BHC,11,TDC,tdc_coin_left_BHC11-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35570,BHC,12,TDC,tdc_coin_left_BHC12-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35570,BHC,13,TDC,tdc_coin_left_BHC13-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35570,BHC,14,TDC,tdc_coin_left_BHC14-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35570,BHC,15,TDC,tdc_coin_left_BHC15-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35570,BHD,00,QDC,qdc_hit_BHD00left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35570,BHD,01,QDC,qdc_hit_BHD01left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35570,BHD,02,QDC,qdc_hit_BHD02left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35570,BHD,03,QDC,qdc_hit_BHD03left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35570,BHD,04,QDC,qdc_hit_BHD04left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35570,BHD,05,QDC,qdc_hit_BHD05left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35570,BHD,06,QDC,qdc_hit_BHD06left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35570,BHD,07,QDC,qdc_hit_BHD07left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35570,BHD,08,QDC,qdc_hit_BHD08left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35570,BHD,09,QDC,qdc_hit_BHD09left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35570,BHD,10,QDC,qdc_hit_BHD10left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35570,BHD,11,QDC,qdc_hit_BHD11left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35570,BHD,12,QDC,qdc_hit_BHD12left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35570,BHD,00,TDC,tdc_coin_left_BHD00-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35570,BHD,01,TDC,tdc_coin_left_BHD01-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35570,BHD,02,TDC,tdc_coin_left_BHD02-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35570,BHD,03,TDC,tdc_coin_left_BHD03-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35570,BHD,04,TDC,tdc_coin_left_BHD04-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35570,BHD,05,TDC,tdc_coin_left_BHD05-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35570,BHD,06,TDC,tdc_coin_left_BHD06-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35570,BHD,07,TDC,tdc_coin_left_BHD07-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35570,BHD,08,TDC,tdc_coin_left_BHD08-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35570,BHD,09,TDC,tdc_coin_left_BHD09-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35570,BHD,10,TDC,tdc_coin_left_BHD10-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35570,BHD,11,TDC,tdc_coin_left_BHD11-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35570,BHD,12,TDC,tdc_coin_left_BHD12-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35571,BHC,00,QDC,qdc_hit_BHC00left,BHC/Paddle00/QDC/qdc_hit_BHC00left,1,1,0,2287,122.328462622,0.484175014621,12.1020451992,0.506822668739,41.2233208696,1.6482636517,51.7190473373,40,104.843949045,148.156050955,ok
+35571,BHC,01,QDC,qdc_hit_BHC01left,BHC/Paddle01/QDC/qdc_hit_BHC01left,1,1,0,3341,128.368894295,0.364438673354,13.6705496442,0.388334884785,53.3974160129,1.76024264302,62.2078753906,54,101.474522293,157.525477707,ok
+35571,BHC,02,QDC,qdc_hit_BHC02left,BHC/Paddle02/QDC/qdc_hit_BHC02left,1,1,0,4425,132.766151289,0.326997490498,14.5939599193,0.33172711508,66.671328159,1.87695108425,74.1193073079,64,104.378980892,170.621019108,ok
+35571,BHC,03,QDC,qdc_hit_BHC03left,BHC/Paddle03/QDC/qdc_hit_BHC03left,1,1,0,15579,133.774471805,0.203446692478,18.6267950494,0.199242448127,205.593380157,2.89427274251,224.57187493,88,90.6401273885,182.359872611,ok
+35571,BHC,04,QDC,qdc_hit_BHC04left,BHC/Paddle04/QDC/qdc_hit_BHC04left,1,1,0,79458,136.673429695,0.119225561502,23.2652707671,0.112975666346,731.850279481,4.80398292187,525.847231276,112,80.1751592357,194.824840764,ok
+35571,BHC,05,QDC,qdc_hit_BHC05left,BHC/Paddle05/QDC/qdc_hit_BHC05left,1,1,0,126689,136.835047061,0.111534428717,29.9790912072,0.100746475469,1065.47275983,5.02985214523,817.032588595,152,60.7929936306,216.207006369,ok
+35571,BHC,06,QDC,qdc_hit_BHC06left,BHC/Paddle06/QDC/qdc_hit_BHC06left,1,1,0,143053,146.609887747,0.124597451608,33.7397578764,0.112187539697,948.335111865,4.45816590614,826.29263468,172,59.601910828,235.398089172,ok
+35571,BHC,07,QDC,qdc_hit_BHC07left,BHC/Paddle07/QDC/qdc_hit_BHC07left,1,1,0,255016,143.250911916,0.0749743218881,30.3026008332,0.0657683033242,2297.43373202,7.27324117651,1722.38266914,168,65.1496815287,235.850318471,ok
+35571,BHC,08,QDC,qdc_hit_BHC08left,BHC/Paddle08/QDC/qdc_hit_BHC08left,1,1,0,214011,120.756167523,0.0860659425857,31.0017167834,0.0748955457361,1770.58846505,6.29023476022,1192.13208943,170,31.8757961783,205.124203822,ok
+35571,BHC,09,QDC,qdc_hit_BHC09left,BHC/Paddle09/QDC/qdc_hit_BHC09left,1,1,0,135675,129.503553205,0.125068779033,31.8837604251,0.112424880781,916.973587418,4.52205400577,874.434273577,160,45.9713375796,209.02866242,ok
+35571,BHC,10,QDC,qdc_hit_BHC10left,BHC/Paddle10/QDC/qdc_hit_BHC10left,1,1,0,104346,134.187276269,0.129353120302,29.6902492678,0.115610972719,781.786712892,4.3130819946,574.262520333,154,49.5191082803,207.48089172,ok
+35571,BHC,11,QDC,qdc_hit_BHC11left,BHC/Paddle11/QDC/qdc_hit_BHC11left,1,1,0,83514,138.676830897,0.123412418359,25.0475906551,0.114923052137,725.248439893,4.58181561155,519.755673119,124,76.8057324841,204.194267516,ok
+35571,BHC,12,QDC,qdc_hit_BHC12left,BHC/Paddle12/QDC/qdc_hit_BHC12left,1,1,0,16744,129.532498881,0.181400603793,17.0326958796,0.171448793184,232.705085561,3.16517698921,144.645841669,82,84.4617834395,168.538216561,ok
+35571,BHC,13,QDC,qdc_hit_BHC13left,BHC/Paddle13/QDC/qdc_hit_BHC13left,1,1,0,5270,136.822560041,0.265650945758,13.614290851,0.257758398131,89.4528815172,2.21854245137,93.6732078699,64,99.3789808917,165.621019108,ok
+35571,BHC,14,QDC,qdc_hit_BHC14left,BHC/Paddle14/QDC/qdc_hit_BHC14left,1,1,0,3533,148.193171155,0.338559042654,13.4490432757,0.332097459077,56.8789270502,1.78009193975,81.314192043,58,115.926751592,177.073248408,ok
+35571,BHC,15,QDC,qdc_hit_BHC15left,BHC/Paddle15/QDC/qdc_hit_BHC15left,1,1,0,2670,149.321971596,0.311449515499,11.9007343345,0.317734495967,55.1499122028,1.91236325061,91.1989701677,56,121.200636943,179.799363057,ok
+35571,BHC,00,TDC,tdc_coin_left_BHC00-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35571,BHC,01,TDC,tdc_coin_left_BHC01-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35571,BHC,02,TDC,tdc_coin_left_BHC02-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35571,BHC,03,TDC,tdc_coin_left_BHC03-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35571,BHC,04,TDC,tdc_coin_left_BHC04-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35571,BHC,05,TDC,tdc_coin_left_BHC05-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35571,BHC,06,TDC,tdc_coin_left_BHC06-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35571,BHC,07,TDC,tdc_coin_left_BHC07-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35571,BHC,08,TDC,tdc_coin_left_BHC08-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35571,BHC,09,TDC,tdc_coin_left_BHC09-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35571,BHC,10,TDC,tdc_coin_left_BHC10-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35571,BHC,11,TDC,tdc_coin_left_BHC11-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35571,BHC,12,TDC,tdc_coin_left_BHC12-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35571,BHC,13,TDC,tdc_coin_left_BHC13-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35571,BHC,14,TDC,tdc_coin_left_BHC14-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35571,BHC,15,TDC,tdc_coin_left_BHC15-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35571,BHD,00,QDC,qdc_hit_BHD00left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35571,BHD,01,QDC,qdc_hit_BHD01left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35571,BHD,02,QDC,qdc_hit_BHD02left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35571,BHD,03,QDC,qdc_hit_BHD03left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35571,BHD,04,QDC,qdc_hit_BHD04left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35571,BHD,05,QDC,qdc_hit_BHD05left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35571,BHD,06,QDC,qdc_hit_BHD06left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35571,BHD,07,QDC,qdc_hit_BHD07left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35571,BHD,08,QDC,qdc_hit_BHD08left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35571,BHD,09,QDC,qdc_hit_BHD09left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35571,BHD,10,QDC,qdc_hit_BHD10left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35571,BHD,11,QDC,qdc_hit_BHD11left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35571,BHD,12,QDC,qdc_hit_BHD12left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35571,BHD,00,TDC,tdc_coin_left_BHD00-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35571,BHD,01,TDC,tdc_coin_left_BHD01-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35571,BHD,02,TDC,tdc_coin_left_BHD02-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35571,BHD,03,TDC,tdc_coin_left_BHD03-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35571,BHD,04,TDC,tdc_coin_left_BHD04-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35571,BHD,05,TDC,tdc_coin_left_BHD05-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35571,BHD,06,TDC,tdc_coin_left_BHD06-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35571,BHD,07,TDC,tdc_coin_left_BHD07-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35571,BHD,08,TDC,tdc_coin_left_BHD08-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35571,BHD,09,TDC,tdc_coin_left_BHD09-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35571,BHD,10,TDC,tdc_coin_left_BHD10-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35571,BHD,11,TDC,tdc_coin_left_BHD11-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35571,BHD,12,TDC,tdc_coin_left_BHD12-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35572,BHC,00,QDC,qdc_hit_BHC00left,BHC/Paddle00/QDC/qdc_hit_BHC00left,1,1,0,2378,121.88658377,0.39346119444,12.3842781376,0.385235217109,42.4884890951,1.58680856925,64.2411306567,48,98.0222929936,148.977707006,ok
+35572,BHC,01,QDC,qdc_hit_BHC01left,BHC/Paddle01/QDC/qdc_hit_BHC01left,1,1,0,3371,128.322008058,0.347139293671,13.7470442445,0.310074997338,52.5981960468,1.64116213167,91.6097150358,66,97.1050955414,165.894904459,ok
+35572,BHC,02,QDC,qdc_hit_BHC02left,BHC/Paddle02/QDC/qdc_hit_BHC02left,1,1,0,4422,132.641953356,0.298198855961,13.2453461498,0.28466573553,72.6009055541,1.99510342563,71.5341191587,56,105.200636943,163.799363057,ok
+35572,BHC,03,QDC,qdc_hit_BHC03left,BHC/Paddle03/QDC/qdc_hit_BHC03left,1,1,0,15853,133.481986189,0.198846903556,17.6144726105,0.196335936784,224.024418063,3.09907669817,157.966503276,76,90.0095541401,168.99044586,ok
+35572,BHC,04,QDC,qdc_hit_BHC04left,BHC/Paddle04/QDC/qdc_hit_BHC04left,1,1,0,82195,137.471532848,0.127381905363,25.9584655477,0.118928763306,700.251817669,4.43100063768,577.553559351,130,70.2579617834,202.742038217,ok
+35572,BHC,05,QDC,qdc_hit_BHC05left,BHC/Paddle05/QDC/qdc_hit_BHC05left,1,1,0,163524,137.142454281,0.102517227813,32.8585060538,0.0910683902266,1391.7701305,5.46781120865,1194.55159573,168,52.1496815287,222.850318471,ok
+35572,BHC,06,QDC,qdc_hit_BHC06left,BHC/Paddle06/QDC/qdc_hit_BHC06left,1,1,0,169326,147.481198763,0.121515258076,37.0611941751,0.109355470321,1124.86065816,4.63656472708,975.971778135,186,58.2324840764,246.767515924,ok
+35572,BHC,07,QDC,qdc_hit_BHC07left,BHC/Paddle07/QDC/qdc_hit_BHC07left,1,1,0,337943,142.629990157,0.0691883945942,33.2896470422,0.0592361627266,3015.22810883,7.8685280852,1557.25011438,180,58.7802547771,242.219745223,ok
+35572,BHC,08,QDC,qdc_hit_BHC08left,BHC/Paddle08/QDC/qdc_hit_BHC08left,1,1,0,284155,120.272808021,0.0773124974391,33.6520389006,0.0664396456642,2417.70543445,7.0243971831,1500.94079508,182,29.5063694268,215.493630573,ok
+35572,BHC,09,QDC,qdc_hit_BHC09left,BHC/Paddle09/QDC/qdc_hit_BHC09left,1,1,0,142839,131.012646281,0.133357152225,36.2998612709,0.11631725515,893.471610314,4.14609098566,950.622560916,194,30.4108280255,226.589171975,ok
+35572,BHC,10,QDC,qdc_hit_BHC10left,BHC/Paddle10/QDC/qdc_hit_BHC10left,1,1,0,112570,136.006311262,0.138825809581,34.3517820129,0.12305620411,770.842939959,3.97261755406,787.033278489,182,41.5063694268,227.493630573,ok
+35572,BHC,11,QDC,qdc_hit_BHC11left,BHC/Paddle11/QDC/qdc_hit_BHC11left,1,1,0,86962,139.100817629,0.128046200424,26.8773252106,0.117265016369,727.855481223,4.39523698233,437.567204764,132,67.9840764331,203.015923567,ok
+35572,BHC,12,QDC,qdc_hit_BHC12left,BHC/Paddle12/QDC/qdc_hit_BHC12left,1,1,0,16851,129.574112455,0.175551658525,16.2520941553,0.169156114264,244.200666233,3.33724621325,158.456925471,74,90.2834394904,166.71656051,ok
+35572,BHC,13,QDC,qdc_hit_BHC13left,BHC/Paddle13/QDC/qdc_hit_BHC13left,1,1,0,5242,136.15778896,0.264351542297,14.1565519431,0.256637922495,90.4369830512,2.19276020179,76.658581752,68,98.8312101911,170.168789809,ok
+35572,BHC,14,QDC,qdc_hit_BHC14left,BHC/Paddle14/QDC/qdc_hit_BHC14left,1,1,0,3589,147.902908784,0.355189810643,13.8092072476,0.362893581687,57.1727124217,1.77527673756,52.5341727189,54,120.474522293,176.525477707,ok
+35572,BHC,15,QDC,qdc_hit_BHC15left,BHC/Paddle15/QDC/qdc_hit_BHC15left,1,1,0,2693,149.051922465,0.337714933607,11.5458192518,0.345182297028,56.6008253632,1.94853854557,60.3760443284,46,120.296178344,168.703821656,ok
+35572,BHC,00,TDC,tdc_coin_left_BHC00-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35572,BHC,01,TDC,tdc_coin_left_BHC01-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35572,BHC,02,TDC,tdc_coin_left_BHC02-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35572,BHC,03,TDC,tdc_coin_left_BHC03-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35572,BHC,04,TDC,tdc_coin_left_BHC04-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35572,BHC,05,TDC,tdc_coin_left_BHC05-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35572,BHC,06,TDC,tdc_coin_left_BHC06-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35572,BHC,07,TDC,tdc_coin_left_BHC07-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35572,BHC,08,TDC,tdc_coin_left_BHC08-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35572,BHC,09,TDC,tdc_coin_left_BHC09-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35572,BHC,10,TDC,tdc_coin_left_BHC10-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35572,BHC,11,TDC,tdc_coin_left_BHC11-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35572,BHC,12,TDC,tdc_coin_left_BHC12-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35572,BHC,13,TDC,tdc_coin_left_BHC13-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35572,BHC,14,TDC,tdc_coin_left_BHC14-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35572,BHC,15,TDC,tdc_coin_left_BHC15-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35572,BHD,00,QDC,qdc_hit_BHD00left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35572,BHD,01,QDC,qdc_hit_BHD01left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35572,BHD,02,QDC,qdc_hit_BHD02left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35572,BHD,03,QDC,qdc_hit_BHD03left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35572,BHD,04,QDC,qdc_hit_BHD04left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35572,BHD,05,QDC,qdc_hit_BHD05left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35572,BHD,06,QDC,qdc_hit_BHD06left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35572,BHD,07,QDC,qdc_hit_BHD07left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35572,BHD,08,QDC,qdc_hit_BHD08left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35572,BHD,09,QDC,qdc_hit_BHD09left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35572,BHD,10,QDC,qdc_hit_BHD10left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35572,BHD,11,QDC,qdc_hit_BHD11left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35572,BHD,12,QDC,qdc_hit_BHD12left,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35572,BHD,00,TDC,tdc_coin_left_BHD00-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35572,BHD,01,TDC,tdc_coin_left_BHD01-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35572,BHD,02,TDC,tdc_coin_left_BHD02-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35572,BHD,03,TDC,tdc_coin_left_BHD03-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35572,BHD,04,TDC,tdc_coin_left_BHD04-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35572,BHD,05,TDC,tdc_coin_left_BHD05-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35572,BHD,06,TDC,tdc_coin_left_BHD06-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35572,BHD,07,TDC,tdc_coin_left_BHD07-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35572,BHD,08,TDC,tdc_coin_left_BHD08-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35572,BHD,09,TDC,tdc_coin_left_BHD09-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35572,BHD,10,TDC,tdc_coin_left_BHD10-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35572,BHD,11,TDC,tdc_coin_left_BHD11-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
+35572,BHD,12,TDC,tdc_coin_left_BHD12-RF,,0,0,-999,0,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,histogram not found
