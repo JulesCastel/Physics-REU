@@ -1,0 +1,25 @@
+(first four runs have different BHD voltage than the rest)
+
+(BHC voltages also changed, see screenshot)
+
+(so there will be two different types of plots)
+
+(first plot is the first four runs, peak position vs high voltage)
+
+(second plot is the first run and the last three, peak position vs high voltage)
+
+plot difference between pedestal (left peak) against the high voltage (right peak)
+
+add uncertainties quadratically (square root of sum of squares)
+
+
+
+next will be times
+
+plot timing peak against voltage
+
+(same two types of plots)
+
+
+
+eventually plot timing peak vs peak size
