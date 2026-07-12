@@ -1123,7 +1123,7 @@ void BHPeakFits_QDC_TDC_memsafe_fixedpaths(const char* inputDir = ".",
 }
 
 // Wrapper matching the filename, so ROOT can run the macro directly.
-void BHPeakFits_QDC_TDC_memsafe_fixedpaths_rounded(const char* inputDir = ".",
+void BHPeakFits(const char* inputDir = ".",
                                                    const char* outputDir = "BH_peak_output",
                                                    int firstRun = 35566,
                                                    int lastRun = 35572,
