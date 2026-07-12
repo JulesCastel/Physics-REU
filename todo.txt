@@ -1,3 +1,5 @@
+we only need two digits after the decimal, round up.
+
 (first four runs have different BHD voltage than the rest)
 
 (BHC voltages also changed, see screenshot)
