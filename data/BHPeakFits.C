@@ -1,6 +1,7 @@
-// BHPeakFits_QDC_TDC_memsafe_fixedpaths.C
+// BHPeakFits_QDC_TDC_memsafe_fixedpaths_rounded.C
 //
 // Memory-safe ROOT macro for Gaussian peak fits in BH QDC/TDC histograms, adjusted for the run35567.root directory layout.
+// This version formats all finite non-integer numeric output to the hundredths place.
 //
 // Main memory fixes compared with the first version:
 //   1. Does NOT recursively read every object in the ROOT file by default.
@@ -88,6 +89,28 @@ void MakeDirectoryIfNeededMemSafe(const TString& dir)
 bool IsFiniteMemSafe(double x)
 {
     return std::isfinite(x);
+}
+
+
+TString FormatNumberHundredthMemSafe(double x)
+{
+    // Keep missing/failed fits obvious in the CSV and terminal output.
+    if (std::isnan(x)) return "nan";
+    if (std::isinf(x)) return (x > 0.0) ? "inf" : "-inf";
+
+    // Round finite values to the hundredths place for display/output.
+    double rounded = std::round(x * 100.0) / 100.0;
+
+    // Avoid printing tiny negative zeros such as -0.00.
+    if (std::fabs(rounded) < 0.005) rounded = 0.0;
+
+    // Integer-valued quantities such as entries and ndf should remain integers.
+    double nearestInteger = std::round(rounded);
+    if (std::fabs(rounded - nearestInteger) < 1.0e-9) {
+        return Form("%.0f", rounded);
+    }
+
+    return Form("%.2f", rounded);
 }
 
 TString DefaultSideForPlaneMemSafe(const TString& plane)
@@ -369,14 +392,21 @@ void DrawFitTextMemSafe(const PeakFitResultMemSafe& r)
     latex.SetNDC(kTRUE);
     latex.SetTextSize(0.032);
 
+    TString peakText = FormatNumberHundredthMemSafe(r.peak);
+    TString peakErrText = FormatNumberHundredthMemSafe(r.peakErr);
+    TString sigmaText = FormatNumberHundredthMemSafe(r.sigma);
+    TString sigmaErrText = FormatNumberHundredthMemSafe(r.sigmaErr);
+    TString chi2Text = FormatNumberHundredthMemSafe(r.chi2);
+    TString ndfText = FormatNumberHundredthMemSafe(r.ndf);
+
     double y = 0.86;
-    latex.DrawLatex(0.58, y, Form("Peak = %.6g #pm %.3g", r.peak, r.peakErr));
+    latex.DrawLatex(0.58, y, Form("Peak = %s #pm %s", peakText.Data(), peakErrText.Data()));
     y -= 0.045;
-    latex.DrawLatex(0.58, y, Form("#sigma = %.6g #pm %.3g", r.sigma, r.sigmaErr));
+    latex.DrawLatex(0.58, y, Form("#sigma = %s #pm %s", sigmaText.Data(), sigmaErrText.Data()));
     y -= 0.045;
 
     if (r.ndf > 0.0) {
-        latex.DrawLatex(0.58, y, Form("#chi^{2}/ndf = %.3g / %.0f", r.chi2, r.ndf));
+        latex.DrawLatex(0.58, y, Form("#chi^{2}/ndf = %s / %s", chi2Text.Data(), ndfText.Data()));
     } else {
         latex.DrawLatex(0.58, y, "#chi^{2}/ndf unavailable");
     }
@@ -555,18 +585,17 @@ void WriteCsvRowMemSafe(std::ofstream& csv, const PeakFitResultMemSafe& r)
         << (r.found ? 1 : 0) << ","
         << (r.ok ? 1 : 0) << ","
         << r.fitStatus << ","
-        << std::setprecision(12)
-        << r.entries << ","
-        << r.peak << ","
-        << r.peakErr << ","
-        << r.sigma << ","
-        << r.sigmaErr << ","
-        << r.amplitude << ","
-        << r.amplitudeErr << ","
-        << r.chi2 << ","
-        << r.ndf << ","
-        << r.fitLow << ","
-        << r.fitHigh << ","
+        << FormatNumberHundredthMemSafe(r.entries).Data() << ","
+        << FormatNumberHundredthMemSafe(r.peak).Data() << ","
+        << FormatNumberHundredthMemSafe(r.peakErr).Data() << ","
+        << FormatNumberHundredthMemSafe(r.sigma).Data() << ","
+        << FormatNumberHundredthMemSafe(r.sigmaErr).Data() << ","
+        << FormatNumberHundredthMemSafe(r.amplitude).Data() << ","
+        << FormatNumberHundredthMemSafe(r.amplitudeErr).Data() << ","
+        << FormatNumberHundredthMemSafe(r.chi2).Data() << ","
+        << FormatNumberHundredthMemSafe(r.ndf).Data() << ","
+        << FormatNumberHundredthMemSafe(r.fitLow).Data() << ","
+        << FormatNumberHundredthMemSafe(r.fitHigh).Data() << ","
         << r.message
         << "\n";
 }
@@ -581,6 +610,8 @@ void BHPeakFits_QDC_TDC_memsafe_fixedpaths(const char* inputDir = ".",
     gROOT->SetBatch(kTRUE);
     gStyle->SetOptStat(1110);
     gStyle->SetOptFit(1111);
+    gStyle->SetStatFormat("6.2f");
+    gStyle->SetFitFormat("6.2f");
 
     // Avoid ROOT automatically attaching newly created histograms to directories.
     // This helps prevent hidden ownership/memory accumulation in long macros.
@@ -674,8 +705,8 @@ void BHPeakFits_QDC_TDC_memsafe_fixedpaths(const char* inputDir = ".",
                     std::cout << "  run " << run
                               << " " << plane << Form("%02d", paddle)
                               << " " << type
-                              << " : peak = " << r.peak
-                              << " +/- " << r.peakErr
+                              << " : peak = " << FormatNumberHundredthMemSafe(r.peak).Data()
+                              << " +/- " << FormatNumberHundredthMemSafe(r.peakErr).Data()
                               << "  [" << r.message << "]"
                               << std::endl;
                 }
@@ -708,6 +739,18 @@ void BHPeakFits_QDC_TDC_memsafe_fixedpaths(const char* inputDir = ".",
               << "savePlots:            " << (savePlots ? "true" : "false") << "\n"
               << "recursive search:     " << (allowRecursiveSearch ? "true" : "false") << "\n"
               << std::endl;
+}
+
+// Wrapper matching this file name, so ROOT can run it directly with:
+//   root -l -b -q 'BHPeakFits_QDC_TDC_memsafe_fixedpaths_rounded.C(".", "BH_peak_output", 35566, 35572)'
+void BHPeakFits(const char* inputDir = ".",
+                                                   const char* outputDir = "BH_peak_output",
+                                                   int firstRun = 35566,
+                                                   int lastRun = 35572,
+                                                   bool savePlots = true,
+                                                   bool allowRecursiveSearch = false)
+{
+    BHPeakFits_QDC_TDC_memsafe_fixedpaths(inputDir, outputDir, firstRun, lastRun, savePlots, allowRecursiveSearch);
 }
 
 // Backward-compatible wrapper: this lets you call the fixed version using the old function name.
