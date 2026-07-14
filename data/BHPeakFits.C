@@ -1,4 +1,4 @@
-// BHPeakFits_QDC_TDC_memsafe_fixedpaths_rounded.C
+// BHPeakFits.C
 //
 // Memory-safe Gaussian fitting macro for BHC/BHD QDC and TDC histograms.
 //
@@ -25,7 +25,7 @@
 // Default run range: 35566 through 35572.
 //
 // Run from a shell:
-//   root -l -b -q 'BHPeakFits_QDC_TDC_memsafe_fixedpaths_rounded.C(".", "BH_peak_output", 35566, 35572)'
+//   root -l -b -q 'BHPeakFits.C(".", "BH_peak_output", 35566, 35572)'
 //
 // CSV output:
 //   BH_peak_output/BH_QDC_TDC_peak_summary_runs35566_35572.csv
@@ -61,6 +61,13 @@ struct PeakCandidate {
     int bin = -1;
     double x = std::numeric_limits<double>::quiet_NaN();
     double height = 0.0;
+    double baseline = 0.0;
+    double prominence = 0.0;
+    int leftHalfWidthBins = 0;
+    int rightHalfWidthBins = 0;
+    int widthBins = 0;
+    double area = 0.0;
+    double score = 0.0;
 };
 
 struct GaussianFit {
@@ -98,12 +105,20 @@ struct HistogramResult {
     // QDC-only two-peak analysis.
     bool twoPeaksFound = false;
     bool twoPeakFitOk = false;
+    int searchStartBin = -1;
+    int searchEndBin = -1;
+    int pedestalSeedBin = -1;
+    int signalSeedBin = -1;
     int valleyBin = -1;
     double valleyX = std::numeric_limits<double>::quiet_NaN();
     GaussianFit pedestal;
     GaussianFit signal;
     double separation = std::numeric_limits<double>::quiet_NaN();
     double separationError = std::numeric_limits<double>::quiet_NaN();
+
+    // Records how the QDC peak seeds were chosen.  Exceptional run-specific
+    // overrides therefore remain visible and auditable in the output CSV.
+    TString seedMethod = "";
     TString twoPeakMessage = "";
 };
 
@@ -441,195 +456,435 @@ GaussianFit FitLegacyDominantPeak(TH1* histogram,
     return result;
 }
 
-std::vector<PeakCandidate> FindLocalMaxima(TH1* histogram,
-                                           double relativeThreshold)
+void GetPhysicalSearchBounds(TH1* histogram,
+                             int& searchStartBin,
+                             int& searchEndBin)
 {
-    std::vector<PeakCandidate> candidates;
-    if (histogram == nullptr || histogram->GetNbinsX() < 7) return candidates;
+    searchStartBin = -1;
+    searchEndBin = -1;
+    if (histogram == nullptr) return;
 
-    std::unique_ptr<TH1> smoothed(CloneHistogram(
-        histogram, Form("%s_peak_search", histogram->GetName())));
-    if (!smoothed) return candidates;
-    smoothed->Smooth(3);
+    const int n = histogram->GetNbinsX();
+    const int leftGuard = std::max(8, static_cast<int>(std::lround(0.005 * n)));
+    const int rightGuard = std::max(8, static_cast<int>(std::lround(0.020 * n)));
 
-    const double maximum = smoothed->GetMaximum();
-    if (!(maximum > 0.0)) return candidates;
-    const double threshold = std::max(0.0, relativeThreshold) * maximum;
+    searchStartBin = std::max(2, 1 + leftGuard);
+    searchEndBin = std::min(n - 1, n - rightGuard);
 
-    for (int bin = 3; bin <= smoothed->GetNbinsX() - 2; ++bin) {
-        const double center = smoothed->GetBinContent(bin);
-        if (center < threshold) continue;
-        if (center >= smoothed->GetBinContent(bin - 1)
-            && center > smoothed->GetBinContent(bin + 1)) {
-            PeakCandidate candidate;
-            candidate.bin = bin;
-            candidate.x = smoothed->GetBinCenter(bin);
-            candidate.height = center;
-            candidates.push_back(candidate);
-        }
+    if (searchEndBin <= searchStartBin + 12) {
+        searchStartBin = 2;
+        searchEndBin = n - 1;
     }
-    return candidates;
 }
 
-bool SelectTwoSeparatedPeaks(TH1* histogram,
-                             PeakCandidate& leftPeak,
-                             PeakCandidate& rightPeak)
+std::vector<double> SmoothBinContents(TH1* histogram, int radius = -1)
 {
-    std::vector<PeakCandidate> candidates = FindLocalMaxima(histogram, 0.03);
-    if (candidates.size() < 2) candidates = FindLocalMaxima(histogram, 0.01);
-    if (candidates.size() < 2) return false;
+    std::vector<double> smoothed;
+    if (histogram == nullptr) return smoothed;
 
-    std::sort(candidates.begin(), candidates.end(),
-              [](const PeakCandidate& a, const PeakCandidate& b) {
-                  return a.height > b.height;
-              });
+    const int n = histogram->GetNbinsX();
+    smoothed.assign(n + 1, 0.0);
+    if (radius < 0) {
+        radius = std::max(3, static_cast<int>(std::lround(n / 512.0)));
+    }
 
-    const double xRange = histogram->GetXaxis()->GetXmax()
-                        - histogram->GetXaxis()->GetXmin();
-    const double binWidth = histogram->GetXaxis()->GetBinWidth(1);
-    const double minimumSeparation = std::max(6.0 * binWidth, 0.03 * xRange);
-    const std::size_t maximumCandidates = std::min<std::size_t>(12, candidates.size());
+    for (int bin = 1; bin <= n; ++bin) {
+        const int low = std::max(1, bin - radius);
+        const int high = std::min(n, bin + radius);
+        double weightedSum = 0.0;
+        double weightSum = 0.0;
 
-    bool found = false;
-    double bestScore = -1.0;
-    PeakCandidate bestA;
-    PeakCandidate bestB;
+        for (int other = low; other <= high; ++other) {
+            const double weight = static_cast<double>(radius + 1 - std::abs(other - bin));
+            weightedSum += weight * histogram->GetBinContent(other);
+            weightSum += weight;
+        }
+        smoothed[bin] = (weightSum > 0.0) ? weightedSum / weightSum : 0.0;
+    }
 
-    for (std::size_t i = 0; i < maximumCandidates; ++i) {
-        for (std::size_t j = i + 1; j < maximumCandidates; ++j) {
-            const double separation = std::fabs(candidates[i].x - candidates[j].x);
-            if (separation < minimumSeparation) continue;
+    return smoothed;
+}
 
-            const double score = std::min(candidates[i].height, candidates[j].height)
-                               + 0.05 * (candidates[i].height + candidates[j].height)
-                               + 0.001 * separation;
-            if (score > bestScore) {
-                bestScore = score;
-                bestA = candidates[i];
-                bestB = candidates[j];
-                found = true;
-            }
+int FindSmoothedMaximumNear(TH1* histogram,
+                            const std::vector<double>& smoothed,
+                            double targetX,
+                            double halfWindowX,
+                            int searchStartBin,
+                            int searchEndBin)
+{
+    if (histogram == nullptr || smoothed.empty()) return -1;
+
+    int low = histogram->GetXaxis()->FindBin(targetX - halfWindowX);
+    int high = histogram->GetXaxis()->FindBin(targetX + halfWindowX);
+    low = std::max(searchStartBin, low);
+    high = std::min(searchEndBin, high);
+    if (high < low) return -1;
+
+    int bestBin = low;
+    double bestValue = smoothed[low];
+    for (int bin = low + 1; bin <= high; ++bin) {
+        if (smoothed[bin] > bestValue) {
+            bestValue = smoothed[bin];
+            bestBin = bin;
         }
     }
+    return bestBin;
+}
 
-    if (!found) return false;
-    if (bestA.x < bestB.x) {
-        leftPeak = bestA;
-        rightPeak = bestB;
-    } else {
-        leftPeak = bestB;
-        rightPeak = bestA;
+void FillSeedCandidate(TH1* histogram,
+                       const std::vector<double>& smoothed,
+                       int bin,
+                       PeakCandidate& candidate)
+{
+    candidate = PeakCandidate();
+    if (histogram == nullptr || smoothed.empty() || bin < 1
+        || bin > histogram->GetNbinsX()) return;
+
+    candidate.bin = bin;
+    candidate.x = histogram->GetBinCenter(bin);
+    candidate.height = smoothed[bin];
+}
+
+// The attached run35569 ROOT file shows two pathological QDC histograms:
+// BHD04 contains a pedestal shoulder near channel 205, while BHD06 contains
+// a very large first-bin spike.  Their physical signal modes are near channels
+// 825 and 770.  The override searches locally around those measured regions
+// rather than hard-coding an exact ROOT bin.
+bool ApplyKnownPeakSeedOverride(TH1* histogram,
+                                int run,
+                                const TString& plane,
+                                int paddle,
+                                PeakCandidate& pedestal,
+                                PeakCandidate& signal,
+                                int& searchStartBin,
+                                int& searchEndBin,
+                                TString& seedMethod)
+{
+    const bool matchingRun = (run == 35569 || run == 33569);
+    if (!matchingRun || plane != "BHD" || (paddle != 4 && paddle != 6)) {
+        return false;
     }
+
+    GetPhysicalSearchBounds(histogram, searchStartBin, searchEndBin);
+    const std::vector<double> smoothed = SmoothBinContents(histogram);
+    if (smoothed.empty()) return false;
+
+    const double signalTarget = (paddle == 4) ? 825.0 : 770.0;
+    const int pedestalBin = FindSmoothedMaximumNear(histogram,
+                                                     smoothed,
+                                                     140.0,
+                                                     70.0,
+                                                     searchStartBin,
+                                                     searchEndBin);
+    const int signalBin = FindSmoothedMaximumNear(histogram,
+                                                   smoothed,
+                                                   signalTarget,
+                                                   180.0,
+                                                   searchStartBin,
+                                                   searchEndBin);
+    if (pedestalBin < 1 || signalBin <= pedestalBin) return false;
+
+    FillSeedCandidate(histogram, smoothed, pedestalBin, pedestal);
+    FillSeedCandidate(histogram, smoothed, signalBin, signal);
+    seedMethod = Form("known-run override: run %d BHD%02d", run, paddle);
     return true;
 }
 
-int FindValleyBin(TH1* histogram, int leftPeakBin, int rightPeakBin)
+// Independent fallback used only if broad-peak candidate selection fails.
+// It uses separated global windows, so a small local bump on the pedestal's
+// descending edge cannot become the signal seed.
+bool SelectSeparatedWindowMaxima(TH1* histogram,
+                                  PeakCandidate& pedestal,
+                                  PeakCandidate& signal,
+                                  int& searchStartBin,
+                                  int& searchEndBin)
 {
-    if (histogram == nullptr || leftPeakBin >= rightPeakBin) return -1;
+    if (histogram == nullptr || histogram->GetNbinsX() < 32) return false;
 
-    std::unique_ptr<TH1> smoothed(CloneHistogram(
-        histogram, Form("%s_valley_search", histogram->GetName())));
-    if (!smoothed) return -1;
-    smoothed->Smooth(2);
+    GetPhysicalSearchBounds(histogram, searchStartBin, searchEndBin);
+    const std::vector<double> smoothed = SmoothBinContents(histogram);
+    if (smoothed.empty()) return false;
+
+    const int span = searchEndBin - searchStartBin;
+    const int pedestalEnd = std::min(searchEndBin,
+        searchStartBin + static_cast<int>(std::lround(0.18 * span)));
+
+    int pedestalBin = searchStartBin;
+    for (int bin = searchStartBin + 1; bin <= pedestalEnd; ++bin) {
+        if (smoothed[bin] > smoothed[pedestalBin]) pedestalBin = bin;
+    }
+
+    const int enforcedGap = std::max(80,
+        static_cast<int>(std::lround(0.05 * span)));
+    const int signalStart = pedestalBin + enforcedGap;
+    if (signalStart >= searchEndBin) return false;
+
+    int signalBin = signalStart;
+    for (int bin = signalStart + 1; bin <= searchEndBin; ++bin) {
+        if (smoothed[bin] > smoothed[signalBin]) signalBin = bin;
+    }
+
+    if (smoothed[pedestalBin] <= 0.0
+        || smoothed[signalBin] < std::max(2.0, 0.01 * smoothed[pedestalBin])) {
+        return false;
+    }
+
+    FillSeedCandidate(histogram, smoothed, pedestalBin, pedestal);
+    FillSeedCandidate(histogram, smoothed, signalBin, signal);
+    return signal.bin > pedestal.bin;
+}
+
+double RangeMinimum(const std::vector<double>& values, int low, int high)
+{
+    if (values.empty()) return 0.0;
+    low = std::max(1, low);
+    high = std::min(static_cast<int>(values.size()) - 1, high);
+    if (high < low) return 0.0;
+
+    double minimum = values[low];
+    for (int i = low + 1; i <= high; ++i) minimum = std::min(minimum, values[i]);
+    return minimum;
+}
+
+std::vector<PeakCandidate> FindBroadPeakCandidates(TH1* histogram,
+                                                    const std::vector<double>& smoothed,
+                                                    int searchStartBin,
+                                                    int searchEndBin)
+{
+    std::vector<PeakCandidate> candidates;
+    if (histogram == nullptr || smoothed.empty()) return candidates;
+
+    double referenceMaximum = 0.0;
+    for (int bin = searchStartBin; bin <= searchEndBin; ++bin) {
+        referenceMaximum = std::max(referenceMaximum, smoothed[bin]);
+    }
+    if (!(referenceMaximum > 0.0)) return candidates;
+
+    const double minimumProminence = std::max(2.0, 0.005 * referenceMaximum);
+    const int localRadius = std::max(
+        50,
+        static_cast<int>(std::lround(0.05 * (searchEndBin - searchStartBin)))
+    );
+
+    for (int bin = searchStartBin + 1; bin <= searchEndBin - 1; ++bin) {
+        const double center = smoothed[bin];
+        if (!(center >= smoothed[bin - 1] && center > smoothed[bin + 1])) continue;
+
+        const double leftMinimum = RangeMinimum(
+            smoothed,
+            std::max(searchStartBin, bin - localRadius),
+            bin
+        );
+        const double rightMinimum = RangeMinimum(
+            smoothed,
+            bin,
+            std::min(searchEndBin, bin + localRadius)
+        );
+
+        const double baseline = std::max(leftMinimum, rightMinimum);
+        const double prominence = center - baseline;
+        if (prominence < minimumProminence) continue;
+
+        const double halfProminenceLevel = baseline + 0.5 * prominence;
+        int left = bin;
+        int right = bin;
+        while (left > searchStartBin && smoothed[left] > halfProminenceLevel) --left;
+        while (right < searchEndBin && smoothed[right] > halfProminenceLevel) ++right;
+
+        const int leftHalfWidth = bin - left;
+        const int rightHalfWidth = right - bin;
+        const int width = leftHalfWidth + rightHalfWidth;
+        if (width < 8 || std::min(leftHalfWidth, rightHalfWidth) < 3) continue;
+
+        const int areaRadius = std::max(8, 2 * std::max(leftHalfWidth, rightHalfWidth));
+        const int areaLow = std::max(searchStartBin, bin - areaRadius);
+        const int areaHigh = std::min(searchEndBin, bin + areaRadius);
+        double excessArea = 0.0;
+        for (int areaBin = areaLow; areaBin <= areaHigh; ++areaBin) {
+            excessArea += std::max(0.0, smoothed[areaBin] - baseline);
+        }
+
+        PeakCandidate candidate;
+        candidate.bin = bin;
+        candidate.x = histogram->GetBinCenter(bin);
+        candidate.height = center;
+        candidate.baseline = baseline;
+        candidate.prominence = prominence;
+        candidate.leftHalfWidthBins = leftHalfWidth;
+        candidate.rightHalfWidthBins = rightHalfWidth;
+        candidate.widthBins = width;
+        candidate.area = excessArea;
+        candidate.score = excessArea * std::sqrt(std::max(prominence, 1.0));
+        candidates.push_back(candidate);
+    }
+
+    return candidates;
+}
+
+bool SelectPedestalAndSignal(TH1* histogram,
+                             PeakCandidate& pedestal,
+                             PeakCandidate& signal,
+                             int& searchStartBin,
+                             int& searchEndBin)
+{
+    if (histogram == nullptr || histogram->GetNbinsX() < 32) return false;
+
+    GetPhysicalSearchBounds(histogram, searchStartBin, searchEndBin);
+    const std::vector<double> smoothed = SmoothBinContents(histogram);
+    const std::vector<PeakCandidate> candidates = FindBroadPeakCandidates(
+        histogram,
+        smoothed,
+        searchStartBin,
+        searchEndBin
+    );
+    if (candidates.size() < 2) return false;
+
+    const int pedestalLimit = searchStartBin
+        + static_cast<int>(std::lround(0.30 * (searchEndBin - searchStartBin)));
+
+    bool pedestalFound = false;
+    double bestPedestalScore = -1.0;
+    for (const PeakCandidate& candidate : candidates) {
+        if (candidate.bin > pedestalLimit) continue;
+        const double leftPreference = 1.0
+            + 0.0005 * static_cast<double>(candidate.bin - searchStartBin);
+        const double score = candidate.prominence
+                           * std::sqrt(static_cast<double>(candidate.widthBins))
+                           / leftPreference;
+        if (score > bestPedestalScore) {
+            bestPedestalScore = score;
+            pedestal = candidate;
+            pedestalFound = true;
+        }
+    }
+    if (!pedestalFound) return false;
+
+    const int pedestalCoreHalfWidth = std::max(
+        3,
+        std::min(pedestal.leftHalfWidthBins, pedestal.rightHalfWidthBins)
+    );
+    const int signalSearchStart = pedestal.bin
+        + std::max(12, 4 * pedestalCoreHalfWidth);
+
+    bool signalFound = false;
+    double bestSignalScore = -1.0;
+    for (const PeakCandidate& candidate : candidates) {
+        if (candidate.bin < signalSearchStart) continue;
+        if (candidate.score > bestSignalScore) {
+            bestSignalScore = candidate.score;
+            signal = candidate;
+            signalFound = true;
+        }
+    }
+
+    return signalFound && signal.bin > pedestal.bin;
+}
+
+int FindValleyBin(TH1* histogram,
+                  int leftPeakBin,
+                  int rightPeakBin,
+                  const std::vector<double>& smoothed)
+{
+    if (histogram == nullptr || smoothed.empty() || leftPeakBin >= rightPeakBin) return -1;
 
     int valleyBin = leftPeakBin + 1;
-    double minimum = smoothed->GetBinContent(valleyBin);
+    double minimum = smoothed[valleyBin];
     for (int bin = leftPeakBin + 1; bin < rightPeakBin; ++bin) {
-        const double value = smoothed->GetBinContent(bin);
-        if (value < minimum) {
-            minimum = value;
+        if (smoothed[bin] < minimum) {
+            minimum = smoothed[bin];
             valleyBin = bin;
         }
     }
     return valleyBin;
 }
 
-void EstimateBoundedWindow(TH1* histogram,
-                           int peakBin,
-                           int lowerBoundaryBin,
-                           int upperBoundaryBin,
-                           double& fitLow,
-                           double& fitHigh,
-                           double& sigmaGuess)
+bool EstimateSymmetricCoreWindow(TH1* histogram,
+                                 int peakBin,
+                                 int lowerBoundaryBin,
+                                 int upperBoundaryBin,
+                                 double& fitLow,
+                                 double& fitHigh,
+                                 double& sigmaGuess,
+                                 double& allowedMeanShift)
 {
-    const int numberOfBins = histogram->GetNbinsX();
-    lowerBoundaryBin = std::max(1, lowerBoundaryBin);
-    upperBoundaryBin = std::min(numberOfBins, upperBoundaryBin);
+    if (histogram == nullptr) return false;
 
-    const double peakHeight = histogram->GetBinContent(peakBin);
-    const double halfHeight = 0.5 * peakHeight;
+    const int n = histogram->GetNbinsX();
+    lowerBoundaryBin = std::max(1, lowerBoundaryBin);
+    upperBoundaryBin = std::min(n, upperBoundaryBin);
+    if (peakBin <= lowerBoundaryBin || peakBin >= upperBoundaryBin) return false;
+
+    const std::vector<double> smoothed = SmoothBinContents(histogram);
+    if (smoothed.empty()) return false;
+
+    const double peakHeight = smoothed[peakBin];
+    if (!(peakHeight > 0.0)) return false;
+
+    // Use 65% of the peak prominence above a local baseline.  This is a
+    // narrower and more symmetric definition of the Gaussian core than the
+    // old absolute half-height rule, so long QDC tails have less leverage.
+    const double leftBase = RangeMinimum(smoothed, lowerBoundaryBin, peakBin);
+    const double rightBase = RangeMinimum(smoothed, peakBin, upperBoundaryBin);
+    const double localBaseline = std::max(leftBase, rightBase);
+    const double coreLevel = localBaseline + 0.65 * (peakHeight - localBaseline);
+    if (!(coreLevel < peakHeight)) return false;
+
     int halfLeft = peakBin;
     int halfRight = peakBin;
+    while (halfLeft > lowerBoundaryBin && smoothed[halfLeft] > coreLevel) --halfLeft;
+    while (halfRight < upperBoundaryBin && smoothed[halfRight] > coreLevel) ++halfRight;
 
-    while (halfLeft > lowerBoundaryBin
-           && histogram->GetBinContent(halfLeft) > halfHeight) --halfLeft;
-    while (halfRight < upperBoundaryBin
-           && histogram->GetBinContent(halfRight) > halfHeight) ++halfRight;
+    int coreHalfWidthBins = std::min(peakBin - halfLeft, halfRight - peakBin);
+    if (coreHalfWidthBins < 3) coreHalfWidthBins = 3;
+
+    int halfRangeBins = std::max(
+        6,
+        static_cast<int>(std::lround(1.10 * coreHalfWidthBins))
+    );
+    const int availableHalfRange = std::min(
+        peakBin - lowerBoundaryBin,
+        upperBoundaryBin - peakBin
+    );
+    halfRangeBins = std::min(halfRangeBins, availableHalfRange);
+    if (halfRangeBins < 5) return false;
 
     const double binWidth = histogram->GetXaxis()->GetBinWidth(peakBin);
-    double fwhm = histogram->GetBinLowEdge(halfRight + 1)
-                - histogram->GetBinLowEdge(halfLeft);
-    if (!IsFinite(fwhm) || fwhm < 2.0 * binWidth) fwhm = 6.0 * binWidth;
-
-    sigmaGuess = std::max(fwhm / 2.355, binWidth);
     const double peakX = histogram->GetBinCenter(peakBin);
-    const double lowerX = histogram->GetBinLowEdge(lowerBoundaryBin);
-    const double upperX = histogram->GetBinLowEdge(upperBoundaryBin + 1);
-
-    fitLow = std::max(lowerX, peakX - 2.8 * sigmaGuess);
-    fitHigh = std::min(upperX, peakX + 2.8 * sigmaGuess);
-
-    if (fitHigh - fitLow < 5.0 * binWidth) {
-        fitLow = std::max(lowerX, peakX - 3.0 * binWidth);
-        fitHigh = std::min(upperX, peakX + 3.0 * binWidth);
-    }
+    fitLow = peakX - halfRangeBins * binWidth;
+    fitHigh = peakX + halfRangeBins * binWidth;
+    sigmaGuess = std::max(
+        (coreHalfWidthBins * binWidth) / std::sqrt(2.0 * std::log(2.0)),
+        binWidth
+    );
+    allowedMeanShift = std::max(2.0 * binWidth, 0.25 * coreHalfWidthBins * binWidth);
+    return fitHigh > fitLow;
 }
 
-GaussianFit FitBoundedPeak(TH1* histogram,
-                           int run,
-                           const TString& plane,
-                           int paddle,
-                           const TString& label,
-                           int peakBin,
-                           int lowerBoundaryBin,
-                           int upperBoundaryBin)
+bool IsUsableGaussian(const GaussianFit& result)
 {
-    GaussianFit result;
-    if (histogram == nullptr || peakBin < 1 || peakBin > histogram->GetNbinsX()) {
-        result.message = "invalid histogram or peak bin";
-        return result;
-    }
+    return result.status == 0
+        && IsFinite(result.amplitude)
+        && result.amplitude > 0.0
+        && IsFinite(result.mean)
+        && IsFinite(result.meanError)
+        && result.meanError > 0.0
+        && IsFinite(result.sigma)
+        && result.sigma > 0.0
+        && IsFinite(result.sigmaError)
+        && result.sigmaError >= 0.0
+        && result.mean >= result.fitLow
+        && result.mean <= result.fitHigh;
+}
 
-    double sigmaGuess = 0.0;
-    EstimateBoundedWindow(histogram,
-                          peakBin,
-                          lowerBoundaryBin,
-                          upperBoundaryBin,
-                          result.fitLow,
-                          result.fitHigh,
-                          sigmaGuess);
-    if (!(result.fitHigh > result.fitLow)) {
-        result.message = "invalid fit range";
-        return result;
-    }
-
-    const double peakX = histogram->GetBinCenter(peakBin);
-    const double peakHeight = histogram->GetBinContent(peakBin);
-    const double binWidth = histogram->GetXaxis()->GetBinWidth(peakBin);
-    const double fullRange = histogram->GetXaxis()->GetXmax()
-                           - histogram->GetXaxis()->GetXmin();
-
-    const TString name = Form("%s_gaus_run%d_%s%02d",
-                              label.Data(), run, plane.Data(), paddle);
-    TF1 gaussian(name.Data(), "gaus", result.fitLow, result.fitHigh);
-    gaussian.SetParNames("Amplitude", "Mean", "Sigma");
-    gaussian.SetParameters(peakHeight, peakX, sigmaGuess);
-    gaussian.SetParLimits(0, 0.0, std::max(10.0 * peakHeight, 1.0));
-    gaussian.SetParLimits(1, result.fitLow, result.fitHigh);
-    gaussian.SetParLimits(2, std::max(0.25 * binWidth, 1.0e-9), fullRange);
-
-    TFitResultPtr fit = histogram->Fit(&gaussian, "QR0SN");
-    result.status = static_cast<int>(fit);
+void ReadGaussianResult(TF1& gaussian,
+                        int status,
+                        double fitLow,
+                        double fitHigh,
+                        GaussianFit& result)
+{
+    result.status = status;
+    result.fitLow = fitLow;
+    result.fitHigh = fitHigh;
     result.amplitude = gaussian.GetParameter(0);
     result.amplitudeError = gaussian.GetParError(0);
     result.mean = gaussian.GetParameter(1);
@@ -638,17 +893,134 @@ GaussianFit FitBoundedPeak(TH1* histogram,
     result.sigmaError = gaussian.GetParError(2);
     result.chi2 = gaussian.GetChisquare();
     result.ndf = gaussian.GetNDF();
+    result.ok = IsUsableGaussian(result);
+}
 
-    result.ok = result.status == 0
-             && IsFinite(result.mean)
-             && IsFinite(result.meanError)
-             && result.meanError > 0.0
-             && IsFinite(result.sigma)
-             && result.sigma > 0.0
-             && result.mean >= result.fitLow
-             && result.mean <= result.fitHigh;
-    result.message = result.ok ? "ok" : Form("fit status %d", result.status);
+GaussianFit FitSymmetricGaussianCore(TH1* histogram,
+                                     int run,
+                                     const TString& plane,
+                                     int paddle,
+                                     const TString& label,
+                                     int peakBin,
+                                     int lowerBoundaryBin,
+                                     int upperBoundaryBin)
+{
+    GaussianFit result;
+    if (histogram == nullptr || peakBin < 1 || peakBin > histogram->GetNbinsX()) {
+        result.message = "invalid histogram or peak bin";
+        return result;
+    }
+
+    double sigmaGuess = 0.0;
+    double allowedMeanShift = 0.0;
+    if (!EstimateSymmetricCoreWindow(histogram,
+                                     peakBin,
+                                     lowerBoundaryBin,
+                                     upperBoundaryBin,
+                                     result.fitLow,
+                                     result.fitHigh,
+                                     sigmaGuess,
+                                     allowedMeanShift)) {
+        result.message = "could not construct symmetric core window";
+        return result;
+    }
+
+    const double peakX = histogram->GetBinCenter(peakBin);
+    double peakHeight = histogram->GetBinContent(peakBin);
+    for (int bin = std::max(1, peakBin - 2);
+         bin <= std::min(histogram->GetNbinsX(), peakBin + 2);
+         ++bin) {
+        peakHeight = std::max(peakHeight, histogram->GetBinContent(bin));
+    }
+
+    const double binWidth = histogram->GetXaxis()->GetBinWidth(peakBin);
+    const double minimumSigma = std::max(0.35 * sigmaGuess, 0.50 * binWidth);
+    const double maximumSigma = std::max(2.50 * sigmaGuess, minimumSigma + binWidth);
+    const double meanLow = std::max(result.fitLow, peakX - allowedMeanShift);
+    const double meanHigh = std::min(result.fitHigh, peakX + allowedMeanShift);
+
+    const TString firstName = Form("gaus_core1_%s_run%d_%s%02d",
+                                   label.Data(), run, plane.Data(), paddle);
+    TF1 first(firstName.Data(), "gaus", result.fitLow, result.fitHigh);
+    first.SetParNames("Amplitude", "Mean", "Sigma");
+    first.SetParameters(std::max(peakHeight, 1.0), peakX, sigmaGuess);
+    first.SetParLimits(0, 0.0, std::max(10.0 * peakHeight, 1.0));
+    first.SetParLimits(1, meanLow, meanHigh);
+    first.SetParLimits(2, minimumSigma, maximumSigma);
+
+    TFitResultPtr firstFit = histogram->Fit(&first, "QRL0SN");
+    ReadGaussianResult(first,
+                       static_cast<int>(firstFit),
+                       result.fitLow,
+                       result.fitHigh,
+                       result);
+
+    if (!result.ok) {
+        result.message = Form("initial symmetric-core fit status %d", result.status);
+        return result;
+    }
+
+    const double originalHalfRange = 0.5 * (result.fitHigh - result.fitLow);
+    const double centeredAvailableHalfRange = std::min(
+        result.mean - result.fitLow,
+        result.fitHigh - result.mean
+    );
+    if (centeredAvailableHalfRange < 5.0 * binWidth) {
+        result.message = "ok (initial symmetric core; insufficient room to refine)";
+        return result;
+    }
+
+    const double refinedHalfRange = std::min(
+        centeredAvailableHalfRange,
+        std::max(5.0 * binWidth, 1.40 * result.sigma)
+    );
+    const double refinedLow = result.mean - refinedHalfRange;
+    const double refinedHigh = result.mean + refinedHalfRange;
+
+    const TString secondName = Form("gaus_core2_%s_run%d_%s%02d",
+                                    label.Data(), run, plane.Data(), paddle);
+    TF1 second(secondName.Data(), "gaus", refinedLow, refinedHigh);
+    second.SetParNames("Amplitude", "Mean", "Sigma");
+    second.SetParameters(result.amplitude, result.mean, result.sigma);
+    second.SetParLimits(0, 0.0, std::max(10.0 * peakHeight, 1.0));
+    second.SetParLimits(1, meanLow, meanHigh);
+    second.SetParLimits(2, minimumSigma, maximumSigma);
+
+    TFitResultPtr secondFit = histogram->Fit(&second, "QRL0SN");
+    GaussianFit refined;
+    ReadGaussianResult(second,
+                       static_cast<int>(secondFit),
+                       refinedLow,
+                       refinedHigh,
+                       refined);
+
+    if (refined.ok) {
+        refined.message = "ok (refined symmetric core)";
+        return refined;
+    }
+
+    result.message = "ok (initial symmetric core; refinement failed)";
     return result;
+}
+
+void SetQdcDiagnosticDisplayRange(TH1* histogram,
+                                  int searchStartBin,
+                                  int searchEndBin)
+{
+    if (histogram == nullptr) return;
+    if (searchStartBin < 1 || searchEndBin <= searchStartBin) {
+        GetPhysicalSearchBounds(histogram, searchStartBin, searchEndBin);
+    }
+
+    const std::vector<double> smoothed = SmoothBinContents(histogram);
+    double physicalMaximum = 0.0;
+    for (int bin = searchStartBin; bin <= searchEndBin; ++bin) {
+        physicalMaximum = std::max(physicalMaximum, smoothed[bin]);
+    }
+    if (physicalMaximum > 0.0) {
+        histogram->SetMaximum(1.35 * physicalMaximum);
+        histogram->SetMinimum(0.0);
+    }
 }
 
 HistogramResult AnalyzeHistogram(TH1* histogram,
@@ -689,37 +1061,73 @@ HistogramResult AnalyzeHistogram(TH1* histogram,
         return result;
     }
 
-    PeakCandidate leftPeak;
-    PeakCandidate rightPeak;
-    result.twoPeaksFound = SelectTwoSeparatedPeaks(histogram, leftPeak, rightPeak);
+    PeakCandidate pedestalSeed;
+    PeakCandidate signalSeed;
+
+    result.twoPeaksFound = ApplyKnownPeakSeedOverride(histogram,
+                                                      run,
+                                                      plane,
+                                                      paddle,
+                                                      pedestalSeed,
+                                                      signalSeed,
+                                                      result.searchStartBin,
+                                                      result.searchEndBin,
+                                                      result.seedMethod);
     if (!result.twoPeaksFound) {
-        result.twoPeakMessage = "could not identify two separated peaks";
+        result.twoPeaksFound = SelectPedestalAndSignal(histogram,
+                                                       pedestalSeed,
+                                                       signalSeed,
+                                                       result.searchStartBin,
+                                                       result.searchEndBin);
+        if (result.twoPeaksFound) {
+            result.seedMethod = "automatic broad-peak search";
+        }
+    }
+    if (!result.twoPeaksFound) {
+        result.twoPeaksFound = SelectSeparatedWindowMaxima(histogram,
+                                                           pedestalSeed,
+                                                           signalSeed,
+                                                           result.searchStartBin,
+                                                           result.searchEndBin);
+        if (result.twoPeaksFound) {
+            result.seedMethod = "separated-window fallback";
+        }
+    }
+    if (!result.twoPeaksFound) {
+        result.twoPeakMessage = "could not identify pedestal and signal with any seed method";
         return result;
     }
 
-    result.valleyBin = FindValleyBin(histogram, leftPeak.bin, rightPeak.bin);
-    if (result.valleyBin <= leftPeak.bin || result.valleyBin >= rightPeak.bin) {
+    result.pedestalSeedBin = pedestalSeed.bin;
+    result.signalSeedBin = signalSeed.bin;
+
+    const std::vector<double> smoothed = SmoothBinContents(histogram);
+    result.valleyBin = FindValleyBin(histogram,
+                                     pedestalSeed.bin,
+                                     signalSeed.bin,
+                                     smoothed);
+    if (result.valleyBin <= pedestalSeed.bin || result.valleyBin >= signalSeed.bin) {
         result.twoPeakMessage = "could not identify valley between peaks";
         return result;
     }
     result.valleyX = histogram->GetBinCenter(result.valleyBin);
 
-    result.pedestal = FitBoundedPeak(histogram,
-                                     run,
-                                     plane,
-                                     paddle,
-                                     "pedestal",
-                                     leftPeak.bin,
-                                     1,
-                                     result.valleyBin);
-    result.signal = FitBoundedPeak(histogram,
-                                   run,
-                                   plane,
-                                   paddle,
-                                   "signal",
-                                   rightPeak.bin,
-                                   result.valleyBin,
-                                   histogram->GetNbinsX());
+    result.pedestal = FitSymmetricGaussianCore(histogram,
+                                                run,
+                                                plane,
+                                                paddle,
+                                                "pedestal",
+                                                pedestalSeed.bin,
+                                                result.searchStartBin,
+                                                result.valleyBin);
+    result.signal = FitSymmetricGaussianCore(histogram,
+                                              run,
+                                              plane,
+                                              paddle,
+                                              "signal",
+                                              signalSeed.bin,
+                                              result.valleyBin,
+                                              result.searchEndBin);
 
     result.twoPeakFitOk = result.pedestal.ok
                        && result.signal.ok
@@ -764,6 +1172,12 @@ void DrawResult(TCanvas* canvas,
         canvas->SaveAs(pngPath.Data());
         if (pdfPath.Length() > 0) canvas->Print(pdfPath.Data());
         return;
+    }
+
+    if (result.type == "QDC") {
+        SetQdcDiagnosticDisplayRange(histogram,
+                                     result.searchStartBin,
+                                     result.searchEndBin);
     }
 
     histogram->SetLineWidth(2);
@@ -878,7 +1292,7 @@ void WriteCsvHeader(std::ofstream& csv)
         << "amplitude,amplitude_uncertainty,chi2,ndf,fit_low,fit_high,message,"
 
         // Appended QDC two-peak fields.
-        << "two_peaks_found,two_peak_fit_ok,"
+        << "two_peaks_found,two_peak_fit_ok,seed_method,"
         << "pedestal_peak,pedestal_peak_uncertainty,pedestal_sigma,"
         << "pedestal_sigma_uncertainty,pedestal_amplitude,"
         << "pedestal_amplitude_uncertainty,pedestal_chi2,pedestal_ndf,"
@@ -929,7 +1343,8 @@ void WriteCsvRow(std::ofstream& csv, const HistogramResult& result)
         << FormatHundredth(result.legacy.fitHigh) << ","
         << CsvSafe(result.legacy.message) << ","
         << (result.twoPeaksFound ? 1 : 0) << ","
-        << (result.twoPeakFitOk ? 1 : 0) << ",";
+        << (result.twoPeakFitOk ? 1 : 0) << ","
+        << CsvSafe(result.seedMethod) << ",";
 
     WriteFitFields(csv, result.pedestal);
     csv << ",";
@@ -1053,7 +1468,7 @@ void BHPeakFits_QDC_TDC_memsafe_fixedpaths(const char* inputDir = ".",
                               << " " << type;
                     if (type == "QDC") {
                         if (result.twoPeakFitOk) {
-                            std::cout << " : pedestal = "
+                            std::cout << " : [" << result.seedMethod << "] pedestal = "
                                       << FormatHundredth(result.pedestal.mean)
                                       << " +/- "
                                       << FormatHundredth(result.pedestal.meanError)
@@ -1122,8 +1537,41 @@ void BHPeakFits_QDC_TDC_memsafe_fixedpaths(const char* inputDir = ".",
               << std::endl;
 }
 
-// Wrapper matching the filename, so ROOT can run the macro directly.
+
+// Wrapper matching BHPeakFits.C, so ROOT can run the renamed macro directly.
 void BHPeakFits(const char* inputDir = ".",
+                const char* outputDir = "BH_peak_output",
+                int firstRun = 35566,
+                int lastRun = 35572,
+                bool savePlots = true,
+                bool allowRecursiveSearch = false)
+{
+    BHPeakFits_QDC_TDC_memsafe_fixedpaths(inputDir,
+                                          outputDir,
+                                          firstRun,
+                                          lastRun,
+                                          savePlots,
+                                          allowRecursiveSearch);
+}
+
+// Backward-compatible wrapper matching the earlier revised filename.
+void BHPeakFits_QDC_TDC_memsafe_fixedpaths_rounded_revised(const char* inputDir = ".",
+                                                           const char* outputDir = "BH_peak_output",
+                                                           int firstRun = 35566,
+                                                           int lastRun = 35572,
+                                                           bool savePlots = true,
+                                                           bool allowRecursiveSearch = false)
+{
+    BHPeakFits_QDC_TDC_memsafe_fixedpaths(inputDir,
+                                          outputDir,
+                                          firstRun,
+                                          lastRun,
+                                          savePlots,
+                                          allowRecursiveSearch);
+}
+
+// Wrapper matching the filename, so ROOT can run the macro directly.
+void BHPeakFits_QDC_TDC_memsafe_fixedpaths_rounded(const char* inputDir = ".",
                                                    const char* outputDir = "BH_peak_output",
                                                    int firstRun = 35566,
                                                    int lastRun = 35572,
