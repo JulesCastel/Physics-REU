@@ -29,11 +29,7 @@
 //   defaultRun + 6: BHC +1.0 V, paddles 4-11
 //
 // Run from a shell, using the run numbers in the current request:
-//   root -l -b -q 'BH_QDC_HVScan.C(".", "BH_QDC_HV_scan", 33566, true, false)'
-//
-// The earlier Gaussian-fit work used run numbers beginning with 35566.
-// If those are the actual file names, use:
-//   root -l -b -q 'BH_QDC_HVScan.C(".", "BH_QDC_HV_scan", 35566, true, false)'
+//   root -l -b -q 'BH_QDC_HVScan.C(".", "BH_QDC_HV_scan", 35566, true, true)'
 //
 // Arguments:
 //   inputDir          directory containing runNNNNN.root files
@@ -71,10 +67,17 @@
 
 namespace BH_QDC_HVScan_Detail {
 
+const char* kAlgorithmVersion =
+    "HVScan robust separated-region Gaussian+background v6 (2026-07-14)";
+
 struct PeakCandidate {
     int bin = -1;
     double x = std::numeric_limits<double>::quiet_NaN();
     double height = 0.0;
+    double baseline = 0.0;
+    double prominence = 0.0;
+    int leftHalfWidthBins = 0;
+    int rightHalfWidthBins = 0;
 };
 
 struct GaussianPeakFit {
@@ -91,6 +94,8 @@ struct GaussianPeakFit {
     double ndf = std::numeric_limits<double>::quiet_NaN();
     double fitLow = std::numeric_limits<double>::quiet_NaN();
     double fitHigh = std::numeric_limits<double>::quiet_NaN();
+    double backgroundAtPeak = std::numeric_limits<double>::quiet_NaN();
+    double backgroundSlope = std::numeric_limits<double>::quiet_NaN();
 
     TString message = "";
 };
@@ -115,8 +120,15 @@ struct ScanPoint {
     bool peaksFound = false;
     bool ok = false;
 
+    int pedestalSeedBin = -1;
+    int signalSeedBin = -1;
+    double pedestalSeedX = std::numeric_limits<double>::quiet_NaN();
+    double signalSeedX = std::numeric_limits<double>::quiet_NaN();
+    int signalSearchStartBin = -1;
+    int signalSearchEndBin = -1;
     int valleyBin = -1;
     double valleyX = std::numeric_limits<double>::quiet_NaN();
+    TString seedMethod = "";
 
     GaussianPeakFit pedestal;
     GaussianPeakFit signal;
@@ -191,182 +203,232 @@ TH1* GetQdcHistogram(TFile* file,
     return nullptr;
 }
 
-std::vector<PeakCandidate> FindLocalMaxima(TH1* histogram, double relativeThreshold)
+// Peak finder used by THIS high-voltage-scan macro.
+//
+// The older implementation selected the two tallest local maxima after only a
+// light TH1::Smooth call.  That allowed fluctuations on the falling pedestal
+// shoulder (for example, channel 205 in run 35569 BHD04) to be selected as the
+// signal.  It also used the first-bin overflow-like spike when setting the
+// detection threshold, which hid the physical peaks in BHD06.
+//
+// The new method is deliberately different:
+//   * build a Gaussian-smoothed copy in memory (the original histogram is never
+//     modified and is still used for the fits);
+//   * find the pedestal only in the early-QDC region;
+//   * estimate the pedestal half-height width;
+//   * begin the signal search at least four pedestal half-widths to the right;
+//   * choose the strongest broad structure in that separated signal region.
+//
+// For the supplied 4096-channel histograms this finds approximately
+//   run 35569 BHD04: pedestal 138, signal 846
+//   run 35569 BHD06: pedestal 144, signal 752.
+std::vector<double> BuildGaussianSmoothedCounts(TH1* histogram,
+                                                double sigmaBins = 8.0)
 {
-    std::vector<PeakCandidate> candidates;
-    if (histogram == nullptr || histogram->GetNbinsX() < 7) return candidates;
+    std::vector<double> smoothed;
+    if (histogram == nullptr) return smoothed;
 
-    std::unique_ptr<TH1> smoothed(dynamic_cast<TH1*>(histogram->Clone(
-        Form("%s_smoothed_for_peak_search", histogram->GetName()))));
-    if (!smoothed) return candidates;
+    const int numberOfBins = histogram->GetNbinsX();
+    smoothed.assign(numberOfBins + 1, 0.0); // ROOT-style 1-based indexing.
+    if (numberOfBins < 3 || !(sigmaBins > 0.0)) return smoothed;
 
-    smoothed->SetDirectory(nullptr);
-    smoothed->Smooth(3);
+    const int radius = std::max(3, static_cast<int>(std::ceil(4.0 * sigmaBins)));
+    std::vector<double> kernel(2 * radius + 1, 0.0);
+    double normalization = 0.0;
 
-    const int numberOfBins = smoothed->GetNbinsX();
-    const double maximum = smoothed->GetMaximum();
-    if (!(maximum > 0.0)) return candidates;
+    for (int offset = -radius; offset <= radius; ++offset) {
+        const double weight = std::exp(-0.5 * offset * offset
+                                       / (sigmaBins * sigmaBins));
+        kernel[offset + radius] = weight;
+        normalization += weight;
+    }
+    if (!(normalization > 0.0)) return smoothed;
+    for (double& weight : kernel) weight /= normalization;
 
-    const double threshold = std::max(0.0, relativeThreshold) * maximum;
-
-    for (int bin = 3; bin <= numberOfBins - 2; ++bin) {
-        const double center = smoothed->GetBinContent(bin);
-        const double left1 = smoothed->GetBinContent(bin - 1);
-        const double right1 = smoothed->GetBinContent(bin + 1);
-
-        if (center < threshold) continue;
-        if (!(center >= left1 && center > right1)) continue;
-
-        PeakCandidate candidate;
-        candidate.bin = bin;
-        candidate.x = smoothed->GetBinCenter(bin);
-        candidate.height = center;
-        candidates.push_back(candidate);
+    for (int bin = 1; bin <= numberOfBins; ++bin) {
+        double value = 0.0;
+        for (int offset = -radius; offset <= radius; ++offset) {
+            const int sourceBin = std::max(1, std::min(numberOfBins, bin + offset));
+            value += kernel[offset + radius] * histogram->GetBinContent(sourceBin);
+        }
+        smoothed[bin] = value;
     }
 
-    return candidates;
+    return smoothed;
 }
 
-bool SelectTwoSeparatedPeaks(TH1* histogram,
-                             PeakCandidate& leftPeak,
-                             PeakCandidate& rightPeak,
-                             double relativeThreshold = 0.03)
+double PercentileInBinRange(const std::vector<double>& values,
+                            int firstBin,
+                            int lastBin,
+                            double percentile)
 {
-    if (histogram == nullptr) return false;
+    if (values.size() <= 1) return 0.0;
+    const int maximumBin = static_cast<int>(values.size()) - 1;
+    firstBin = std::max(1, std::min(maximumBin, firstBin));
+    lastBin = std::max(1, std::min(maximumBin, lastBin));
+    if (firstBin > lastBin) std::swap(firstBin, lastBin);
 
-    std::vector<PeakCandidate> candidates = FindLocalMaxima(histogram, relativeThreshold);
-    if (candidates.size() < 2 && relativeThreshold > 0.01) {
-        candidates = FindLocalMaxima(histogram, 0.01);
+    std::vector<double> sample;
+    sample.reserve(lastBin - firstBin + 1);
+    for (int bin = firstBin; bin <= lastBin; ++bin) {
+        if (IsFinite(values[bin])) sample.push_back(values[bin]);
     }
-    if (candidates.size() < 2) return false;
+    if (sample.empty()) return 0.0;
 
-    std::sort(candidates.begin(), candidates.end(),
-              [](const PeakCandidate& a, const PeakCandidate& b) {
-                  return a.height > b.height;
-              });
+    std::sort(sample.begin(), sample.end());
+    percentile = std::max(0.0, std::min(1.0, percentile));
+    const double index = percentile * (sample.size() - 1);
+    const std::size_t lower = static_cast<std::size_t>(std::floor(index));
+    const std::size_t upper = static_cast<std::size_t>(std::ceil(index));
+    const double fraction = index - lower;
+    return sample[lower] * (1.0 - fraction) + sample[upper] * fraction;
+}
 
-    const double xRange = histogram->GetXaxis()->GetXmax()
-                        - histogram->GetXaxis()->GetXmin();
-    const double binWidth = histogram->GetXaxis()->GetBinWidth(1);
-    const double minimumSeparation = std::max(6.0 * binWidth, 0.03 * xRange);
+int MaximumBinInRange(const std::vector<double>& values,
+                      int firstBin,
+                      int lastBin)
+{
+    if (values.size() <= 1) return -1;
+    const int maximumBin = static_cast<int>(values.size()) - 1;
+    firstBin = std::max(1, std::min(maximumBin, firstBin));
+    lastBin = std::max(1, std::min(maximumBin, lastBin));
+    if (firstBin > lastBin) std::swap(firstBin, lastBin);
 
-    bool pairFound = false;
-    double bestScore = -1.0;
-    PeakCandidate bestA;
-    PeakCandidate bestB;
-
-    const std::size_t maximumCandidates = std::min<std::size_t>(candidates.size(), 12);
-
-    for (std::size_t i = 0; i < maximumCandidates; ++i) {
-        for (std::size_t j = i + 1; j < maximumCandidates; ++j) {
-            const double separation = std::fabs(candidates[i].x - candidates[j].x);
-            if (separation < minimumSeparation) continue;
-
-            // Favor a pair in which BOTH peaks are prominent.  A small separation
-            // term breaks near-ties in favor of clearly distinct peaks.
-            const double smallerHeight = std::min(candidates[i].height,
-                                                  candidates[j].height);
-            const double score = smallerHeight
-                               + 0.05 * (candidates[i].height + candidates[j].height)
-                               + 0.001 * separation;
-
-            if (score > bestScore) {
-                bestScore = score;
-                bestA = candidates[i];
-                bestB = candidates[j];
-                pairFound = true;
-            }
+    int bestBin = firstBin;
+    double bestValue = values[firstBin];
+    for (int bin = firstBin + 1; bin <= lastBin; ++bin) {
+        if (values[bin] > bestValue) {
+            bestValue = values[bin];
+            bestBin = bin;
         }
     }
+    return bestBin;
+}
 
-    if (!pairFound) return false;
+PeakCandidate CharacterizePeak(TH1* histogram,
+                                const std::vector<double>& smoothed,
+                                int peakBin,
+                                int firstBin,
+                                int lastBin)
+{
+    PeakCandidate candidate;
+    if (histogram == nullptr || smoothed.size() <= 1) return candidate;
 
-    if (bestA.x < bestB.x) {
-        leftPeak = bestA;
-        rightPeak = bestB;
-    } else {
-        leftPeak = bestB;
-        rightPeak = bestA;
-    }
+    const int numberOfBins = histogram->GetNbinsX();
+    firstBin = std::max(1, std::min(numberOfBins, firstBin));
+    lastBin = std::max(1, std::min(numberOfBins, lastBin));
+    peakBin = std::max(firstBin, std::min(lastBin, peakBin));
 
-    return true;
+    candidate.bin = peakBin;
+    candidate.x = histogram->GetBinCenter(peakBin);
+    candidate.height = smoothed[peakBin];
+    candidate.baseline = std::max(0.0,
+        PercentileInBinRange(smoothed, firstBin, lastBin, 0.10));
+    candidate.prominence = std::max(0.0,
+        candidate.height - candidate.baseline);
+
+    const double halfProminenceLevel = candidate.baseline
+                                     + 0.5 * candidate.prominence;
+
+    int left = peakBin;
+    while (left > firstBin && smoothed[left] > halfProminenceLevel) --left;
+
+    int right = peakBin;
+    while (right < lastBin && smoothed[right] > halfProminenceLevel) ++right;
+
+    candidate.leftHalfWidthBins = std::max(1, peakBin - left);
+    candidate.rightHalfWidthBins = std::max(1, right - peakBin);
+    return candidate;
+}
+
+bool SelectPedestalAndSignal(TH1* histogram,
+                             PeakCandidate& pedestal,
+                             PeakCandidate& signal,
+                             int& signalSearchStartBin,
+                             int& signalSearchEndBin,
+                             TString& seedMethod)
+{
+    if (histogram == nullptr || histogram->GetNbinsX() < 100) return false;
+
+    const int numberOfBins = histogram->GetNbinsX();
+    const std::vector<double> smoothed = BuildGaussianSmoothedCounts(histogram, 8.0);
+    if (smoothed.size() != static_cast<std::size_t>(numberOfBins + 1)) return false;
+
+    // Ignore edge spikes.  In the supplied files the first QDC bin can be much
+    // taller than either physical peak and is not a useful pedestal seed.
+    const int edgeGuard = std::max(16,
+        static_cast<int>(std::lround(0.004 * numberOfBins)));
+
+    // The pedestal is always in the early-QDC region.  Stopping at 8.5% of the
+    // axis prevents the BHC signal peaks near channel 350 from becoming the
+    // pedestal while still leaving a very generous window around channels 120-160.
+    const int pedestalFirstBin = edgeGuard;
+    const int pedestalLastBin = std::min(numberOfBins - edgeGuard,
+        std::max(pedestalFirstBin + 40,
+                 static_cast<int>(std::lround(0.085 * numberOfBins))));
+
+    const int pedestalBin = MaximumBinInRange(smoothed,
+                                               pedestalFirstBin,
+                                               pedestalLastBin);
+    if (pedestalBin < 1) return false;
+
+    pedestal = CharacterizePeak(histogram,
+                                smoothed,
+                                pedestalBin,
+                                pedestalFirstBin,
+                                pedestalLastBin);
+
+    const int pedestalHalfWidth = std::max(pedestal.leftHalfWidthBins,
+                                           pedestal.rightHalfWidthBins);
+
+    // The 7%-of-axis floor is about channel 287 for a 4096-bin QDC spectrum.
+    // The four-half-width condition is what excludes the BHD04 shoulder at 205.
+    signalSearchStartBin = std::max({
+        pedestal.bin + 80,
+        pedestal.bin + 4 * pedestalHalfWidth,
+        static_cast<int>(std::lround(0.070 * numberOfBins))
+    });
+    signalSearchEndBin = std::min(numberOfBins - edgeGuard,
+        static_cast<int>(std::lround(0.600 * numberOfBins)));
+
+    if (signalSearchStartBin >= signalSearchEndBin) return false;
+
+    const int signalBin = MaximumBinInRange(smoothed,
+                                            signalSearchStartBin,
+                                            signalSearchEndBin);
+    if (signalBin < 1) return false;
+
+    signal = CharacterizePeak(histogram,
+                              smoothed,
+                              signalBin,
+                              signalSearchStartBin,
+                              signalSearchEndBin);
+
+    // Require a sustained structure rather than a one-bin electronics spike.
+    const int signalWidth = signal.leftHalfWidthBins + signal.rightHalfWidthBins;
+    const double minimumProminence = std::max(2.0, 0.005 * pedestal.height);
+    if (!(signal.prominence > minimumProminence) || signalWidth < 8) return false;
+
+    seedMethod = "Gaussian-smoothed separated-region maxima";
+    return signal.bin > pedestal.bin;
 }
 
 int FindValleyBin(TH1* histogram, int leftPeakBin, int rightPeakBin)
 {
-    if (histogram == nullptr) return -1;
-    if (leftPeakBin >= rightPeakBin) return -1;
+    if (histogram == nullptr || leftPeakBin >= rightPeakBin) return -1;
 
-    std::unique_ptr<TH1> smoothed(dynamic_cast<TH1*>(histogram->Clone(
-        Form("%s_smoothed_for_valley", histogram->GetName()))));
-    if (!smoothed) return -1;
-
-    smoothed->SetDirectory(nullptr);
-    smoothed->Smooth(2);
+    const std::vector<double> smoothed = BuildGaussianSmoothedCounts(histogram, 8.0);
+    if (smoothed.empty()) return -1;
 
     int valleyBin = leftPeakBin + 1;
-    double minimum = smoothed->GetBinContent(valleyBin);
-
+    double minimum = smoothed[valleyBin];
     for (int bin = leftPeakBin + 1; bin < rightPeakBin; ++bin) {
-        const double value = smoothed->GetBinContent(bin);
-        if (value < minimum) {
-            minimum = value;
+        if (smoothed[bin] < minimum) {
+            minimum = smoothed[bin];
             valleyBin = bin;
         }
     }
-
     return valleyBin;
-}
-
-void EstimateFitWindow(TH1* histogram,
-                       int peakBin,
-                       int lowerBoundaryBin,
-                       int upperBoundaryBin,
-                       double& fitLow,
-                       double& fitHigh,
-                       double& sigmaGuess)
-{
-    const int numberOfBins = histogram->GetNbinsX();
-    lowerBoundaryBin = std::max(1, lowerBoundaryBin);
-    upperBoundaryBin = std::min(numberOfBins, upperBoundaryBin);
-
-    const double peakHeight = histogram->GetBinContent(peakBin);
-    const double halfHeight = 0.5 * peakHeight;
-
-    int halfLeft = peakBin;
-    int halfRight = peakBin;
-
-    while (halfLeft > lowerBoundaryBin
-           && histogram->GetBinContent(halfLeft) > halfHeight) {
-        --halfLeft;
-    }
-    while (halfRight < upperBoundaryBin
-           && histogram->GetBinContent(halfRight) > halfHeight) {
-        ++halfRight;
-    }
-
-    const double binWidth = histogram->GetXaxis()->GetBinWidth(peakBin);
-    double fwhm = histogram->GetBinLowEdge(halfRight + 1)
-                - histogram->GetBinLowEdge(halfLeft);
-
-    if (!IsFinite(fwhm) || fwhm < 2.0 * binWidth) {
-        fwhm = 6.0 * binWidth;
-    }
-
-    sigmaGuess = std::max(fwhm / 2.355, binWidth);
-
-    const double peakX = histogram->GetBinCenter(peakBin);
-    const double lowerBoundaryX = histogram->GetBinLowEdge(lowerBoundaryBin);
-    const double upperBoundaryX = histogram->GetBinLowEdge(upperBoundaryBin + 1);
-
-    fitLow = std::max(lowerBoundaryX, peakX - 2.8 * sigmaGuess);
-    fitHigh = std::min(upperBoundaryX, peakX + 2.8 * sigmaGuess);
-
-    // Guarantee enough width for a stable three-parameter Gaussian fit.
-    if (fitHigh - fitLow < 5.0 * binWidth) {
-        fitLow = std::max(lowerBoundaryX, peakX - 3.0 * binWidth);
-        fitHigh = std::min(upperBoundaryX, peakX + 3.0 * binWidth);
-    }
 }
 
 GaussianPeakFit FitGaussianPeak(TH1* histogram,
@@ -374,59 +436,108 @@ GaussianPeakFit FitGaussianPeak(TH1* histogram,
                                 const TString& plane,
                                 int paddle,
                                 const TString& label,
-                                int peakBin,
+                                const PeakCandidate& peak,
                                 int lowerBoundaryBin,
                                 int upperBoundaryBin)
 {
     GaussianPeakFit result;
-
-    if (histogram == nullptr || peakBin < 1 || peakBin > histogram->GetNbinsX()) {
-        result.message = "invalid histogram or peak bin";
+    if (histogram == nullptr || peak.bin < 1
+        || peak.bin > histogram->GetNbinsX()) {
+        result.message = "invalid histogram or peak seed";
         return result;
     }
 
-    double sigmaGuess = 0.0;
-    EstimateFitWindow(histogram,
-                      peakBin,
-                      lowerBoundaryBin,
-                      upperBoundaryBin,
-                      result.fitLow,
-                      result.fitHigh,
-                      sigmaGuess);
-
-    if (!(result.fitHigh > result.fitLow)) {
-        result.message = "invalid fit range";
+    const int numberOfBins = histogram->GetNbinsX();
+    lowerBoundaryBin = std::max(1, lowerBoundaryBin);
+    upperBoundaryBin = std::min(numberOfBins, upperBoundaryBin);
+    if (lowerBoundaryBin >= peak.bin || upperBoundaryBin <= peak.bin) {
+        result.message = "peak seed outside fit boundaries";
         return result;
     }
 
-    const double peakX = histogram->GetBinCenter(peakBin);
-    const double peakHeight = histogram->GetBinContent(peakBin);
+    const double binWidth = histogram->GetXaxis()->GetBinWidth(peak.bin);
+    const double peakX = histogram->GetBinCenter(peak.bin);
     const double fullRange = histogram->GetXaxis()->GetXmax()
                            - histogram->GetXaxis()->GetXmin();
-    const double binWidth = histogram->GetXaxis()->GetBinWidth(peakBin);
 
-    const TString functionName = Form("gaus_%s_run%d_%s%02d",
+    // The geometric mean is a compromise between the short and long sides of a
+    // skewed peak.  Using the shorter side alone made many of the previous fits
+    // visibly too small; using the longer side alone lets the tail pull the mean.
+    const double coreHalfWidthBins = std::max(3.0,
+        std::sqrt(static_cast<double>(peak.leftHalfWidthBins)
+                * static_cast<double>(peak.rightHalfWidthBins)));
+
+    int halfRangeBins = std::max(8,
+        static_cast<int>(std::lround(2.20 * coreHalfWidthBins)));
+
+    // Keep the data interval exactly symmetric around the seed and inside the
+    // valley/axis boundaries.
+    halfRangeBins = std::min(halfRangeBins, peak.bin - lowerBoundaryBin - 1);
+    halfRangeBins = std::min(halfRangeBins, upperBoundaryBin - peak.bin - 1);
+    if (halfRangeBins < 5) {
+        result.message = "not enough symmetric bins around peak";
+        return result;
+    }
+
+    result.fitLow = peakX - halfRangeBins * binWidth;
+    result.fitHigh = peakX + halfRangeBins * binWidth;
+
+    const double sigmaGuess = std::max(binWidth,
+        coreHalfWidthBins * binWidth / std::sqrt(2.0 * std::log(2.0)));
+    const double backgroundGuess = std::max(0.0, peak.baseline);
+    const double amplitudeGuess = std::max(1.0,
+        peak.height - backgroundGuess);
+    const double halfRangeX = halfRangeBins * binWidth;
+
+    const TString functionName = Form("gaus_bg_%s_run%d_%s%02d",
                                       label.Data(), run, plane.Data(), paddle);
-    TF1 gaussian(functionName.Data(), "gaus", result.fitLow, result.fitHigh);
-    gaussian.SetParNames("Amplitude", "Mean", "Sigma");
-    gaussian.SetParameters(peakHeight, peakX, sigmaGuess);
-    gaussian.SetParLimits(0, 0.0, std::max(10.0 * peakHeight, 1.0));
-    gaussian.SetParLimits(1, result.fitLow, result.fitHigh);
-    gaussian.SetParLimits(2, std::max(0.25 * binWidth, 1.0e-9), fullRange);
 
-    // Q: quiet, R: use range, 0: do not draw, S: return fit result,
-    // N: do not attach the fit function to the histogram.
-    TFitResultPtr fit = histogram->Fit(&gaussian, "QR0SN");
+    // A symmetric Gaussian is fitted together with a local linear background.
+    // The background absorbs a slowly varying pedestal/signal tail without
+    // forcing the Gaussian mean and width to chase that asymmetric tail.
+    TF1 model(functionName.Data(),
+              "[0]*exp(-0.5*((x-[1])/[2])^2)+[3]+[4]*(x-[5])",
+              result.fitLow,
+              result.fitHigh);
+    model.SetParNames("Amplitude", "Mean", "Sigma",
+                      "Background", "BackgroundSlope", "SeedCenter");
+    model.SetParameters(amplitudeGuess,
+                        peakX,
+                        sigmaGuess,
+                        backgroundGuess,
+                        0.0,
+                        peakX);
+    model.FixParameter(5, peakX);
+
+    const double meanFreedom = std::max(2.0 * binWidth,
+                                        0.45 * coreHalfWidthBins * binWidth);
+    const double slopeLimit = std::max(1.0e-9,
+        std::max(peak.height, 1.0) / std::max(halfRangeX, binWidth));
+
+    model.SetParLimits(0, 0.0, std::max(10.0 * peak.height, 10.0));
+    model.SetParLimits(1, peakX - meanFreedom, peakX + meanFreedom);
+    model.SetParLimits(2,
+                       std::max(0.35 * sigmaGuess, 0.5 * binWidth),
+                       std::min(3.0 * sigmaGuess, fullRange));
+    model.SetParLimits(3, 0.0, std::max(2.0 * peak.height, 10.0));
+    model.SetParLimits(4, -slopeLimit, slopeLimit);
+
+    // Fit the ORIGINAL unsmoothed histogram.  Smoothing is used only for seeds.
+    // Q: quiet, R: range, 0: no automatic drawing, S: return result,
+    // N: do not attach this temporary model to the histogram.
+    TFitResultPtr fit = histogram->Fit(&model, "QR0SN");
     result.status = static_cast<int>(fit);
 
-    result.amplitude = gaussian.GetParameter(0);
-    result.amplitudeError = gaussian.GetParError(0);
-    result.mean = gaussian.GetParameter(1);
-    result.meanError = gaussian.GetParError(1);
-    result.sigma = std::fabs(gaussian.GetParameter(2));
-    result.sigmaError = gaussian.GetParError(2);
-    result.chi2 = gaussian.GetChisquare();
-    result.ndf = gaussian.GetNDF();
+    result.amplitude = model.GetParameter(0);
+    result.amplitudeError = model.GetParError(0);
+    result.mean = model.GetParameter(1);
+    result.meanError = model.GetParError(1);
+    result.sigma = std::fabs(model.GetParameter(2));
+    result.sigmaError = model.GetParError(2);
+    result.backgroundAtPeak = model.GetParameter(3);
+    result.backgroundSlope = model.GetParameter(4);
+    result.chi2 = model.GetChisquare();
+    result.ndf = model.GetNDF();
 
     result.ok = (result.status == 0
                  && IsFinite(result.mean)
@@ -437,7 +548,9 @@ GaussianPeakFit FitGaussianPeak(TH1* histogram,
                  && result.mean >= result.fitLow
                  && result.mean <= result.fitHigh);
 
-    result.message = result.ok ? "ok" : Form("fit status %d", result.status);
+    result.message = result.ok
+        ? "ok (Gaussian plus local linear background)"
+        : Form("fit status %d", result.status);
     return result;
 }
 
@@ -468,17 +581,30 @@ ScanPoint AnalyzeHistogram(TH1* histogram,
         return point;
     }
 
-    PeakCandidate leftPeak;
-    PeakCandidate rightPeak;
-    point.peaksFound = SelectTwoSeparatedPeaks(histogram, leftPeak, rightPeak);
+    PeakCandidate pedestalSeed;
+    PeakCandidate signalSeed;
+    point.peaksFound = SelectPedestalAndSignal(histogram,
+                                               pedestalSeed,
+                                               signalSeed,
+                                               point.signalSearchStartBin,
+                                               point.signalSearchEndBin,
+                                               point.seedMethod);
 
     if (!point.peaksFound) {
-        point.message = "could not identify two separated peaks";
+        point.message = "could not identify separated pedestal and signal regions";
         return point;
     }
 
-    point.valleyBin = FindValleyBin(histogram, leftPeak.bin, rightPeak.bin);
-    if (point.valleyBin <= leftPeak.bin || point.valleyBin >= rightPeak.bin) {
+    point.pedestalSeedBin = pedestalSeed.bin;
+    point.signalSeedBin = signalSeed.bin;
+    point.pedestalSeedX = pedestalSeed.x;
+    point.signalSeedX = signalSeed.x;
+
+    point.valleyBin = FindValleyBin(histogram,
+                                    pedestalSeed.bin,
+                                    signalSeed.bin);
+    if (point.valleyBin <= pedestalSeed.bin
+        || point.valleyBin >= signalSeed.bin) {
         point.message = "could not identify valley between peaks";
         return point;
     }
@@ -490,7 +616,7 @@ ScanPoint AnalyzeHistogram(TH1* histogram,
                                      plane,
                                      paddle,
                                      "pedestal",
-                                     leftPeak.bin,
+                                     pedestalSeed,
                                      1,
                                      point.valleyBin);
 
@@ -499,7 +625,7 @@ ScanPoint AnalyzeHistogram(TH1* histogram,
                                    plane,
                                    paddle,
                                    "signal",
-                                   rightPeak.bin,
+                                   signalSeed,
                                    point.valleyBin,
                                    histogram->GetNbinsX());
 
@@ -521,7 +647,10 @@ ScanPoint AnalyzeHistogram(TH1* histogram,
     point.separationError = std::hypot(point.signal.meanError,
                                        point.pedestal.meanError);
 
-    point.message = "ok";
+    point.message = Form("ok; seeds %.1f / %.1f; %s",
+                         histogram->GetBinCenter(point.pedestalSeedBin),
+                         histogram->GetBinCenter(point.signalSeedBin),
+                         point.seedMethod.Data());
     return point;
 }
 
@@ -536,6 +665,13 @@ void DrawDiagnostic(TCanvas* canvas,
     canvas->cd();
     canvas->SetGrid();
 
+    // Diagnostic-page layout only.  Keep the plot labels inside the page and
+    // close to their axes without changing any fitting or analysis behavior.
+    canvas->SetTopMargin(0.10);
+    canvas->SetBottomMargin(0.13);
+    canvas->SetLeftMargin(0.12);
+    canvas->SetRightMargin(0.04);
+
     TLatex text;
     text.SetNDC(kTRUE);
     text.SetTextSize(0.030);
@@ -549,40 +685,97 @@ void DrawDiagnostic(TCanvas* canvas,
     }
 
     histogram->SetLineWidth(2);
-    histogram->SetTitle(Form("run %d, %s paddle %02d, #DeltaHV = %+.1f V;%s channel;Counts",
+
+    // Set the axis titles separately so the page title can be positioned
+    // precisely with TLatex instead of ROOT's high default title box.
+    histogram->SetTitle("");
+    histogram->GetXaxis()->SetTitle(Form("%s channel", point.histogram.Data()));
+    histogram->GetYaxis()->SetTitle("Counts");
+
+    histogram->GetXaxis()->SetTitleSize(0.044);
+    histogram->GetYaxis()->SetTitleSize(0.044);
+    histogram->GetXaxis()->SetLabelSize(0.032);
+    histogram->GetYaxis()->SetLabelSize(0.032);
+
+    // Smaller offsets move each title toward its axis and away from the page
+    // boundary.  This prevents clipping while leaving the data area intact.
+    histogram->GetXaxis()->SetTitleOffset(1.02);
+    histogram->GetYaxis()->SetTitleOffset(1.05);
+
+    // Scale the diagnostic to the sustained physical spectrum rather than an
+    // isolated first/last-bin electronics spike.  The histogram contents are
+    // not modified; only the displayed y range is changed.
+    const std::vector<double> diagnosticSmooth =
+        BuildGaussianSmoothedCounts(histogram, 8.0);
+    double physicalMaximum = 0.0;
+    if (!diagnosticSmooth.empty()) {
+        const int firstPhysicalBin = std::max(16,
+            static_cast<int>(std::lround(0.004 * histogram->GetNbinsX())));
+        const int lastPhysicalBin = std::min(histogram->GetNbinsX(),
+            static_cast<int>(std::lround(0.600 * histogram->GetNbinsX())));
+        for (int bin = firstPhysicalBin; bin <= lastPhysicalBin; ++bin) {
+            physicalMaximum = std::max(physicalMaximum, diagnosticSmooth[bin]);
+        }
+    }
+    if (physicalMaximum > 0.0) histogram->SetMaximum(1.25 * physicalMaximum);
+    histogram->Draw("hist");
+
+    TLatex plotTitle;
+    plotTitle.SetNDC(kTRUE);
+    plotTitle.SetTextAlign(22);
+    plotTitle.SetTextSize(0.040);
+    plotTitle.DrawLatex(0.50, 0.945,
+                        Form("run %d, %s paddle %02d, #DeltaHV = %+.1f V",
                              point.run,
                              point.plane.Data(),
                              point.paddle,
-                             point.voltageOffset,
-                             point.histogram.Data()));
-    histogram->Draw("hist");
+                             point.voltageOffset));
 
     std::unique_ptr<TF1> pedestalFunction;
     std::unique_ptr<TF1> signalFunction;
 
+    // FitGaussianPeak fits a Gaussian PLUS a local linear background.  The
+    // amplitude stored in GaussianPeakFit is therefore the height ABOVE that
+    // background, not the full histogram height.  Drawing a bare "gaus" with
+    // that amplitude made the curves appear shifted downward by exactly the
+    // fitted background.  Draw the same complete model used in the fit so the
+    // diagnostic curve lies on the measured spectrum.
+    const char* fittedModel =
+        "[0]*exp(-0.5*((x-[1])/[2])^2)+[3]+[4]*(x-[5])";
+
     if (point.pedestal.ok) {
+        const double pedestalSeedX =
+            histogram->GetBinCenter(point.pedestalSeedBin);
         pedestalFunction.reset(new TF1(
             Form("draw_ped_run%d_%s%02d", point.run, point.plane.Data(), point.paddle),
-            "gaus",
+            fittedModel,
             point.pedestal.fitLow,
             point.pedestal.fitHigh));
         pedestalFunction->SetParameters(point.pedestal.amplitude,
                                         point.pedestal.mean,
-                                        point.pedestal.sigma);
+                                        point.pedestal.sigma,
+                                        point.pedestal.backgroundAtPeak,
+                                        point.pedestal.backgroundSlope,
+                                        pedestalSeedX);
         pedestalFunction->SetLineColor(kBlue + 1);
         pedestalFunction->SetLineWidth(3);
         pedestalFunction->Draw("same");
     }
 
     if (point.signal.ok) {
+        const double signalSeedX =
+            histogram->GetBinCenter(point.signalSeedBin);
         signalFunction.reset(new TF1(
             Form("draw_sig_run%d_%s%02d", point.run, point.plane.Data(), point.paddle),
-            "gaus",
+            fittedModel,
             point.signal.fitLow,
             point.signal.fitHigh));
         signalFunction->SetParameters(point.signal.amplitude,
                                       point.signal.mean,
-                                      point.signal.sigma);
+                                      point.signal.sigma,
+                                      point.signal.backgroundAtPeak,
+                                      point.signal.backgroundSlope,
+                                      signalSeedX);
         signalFunction->SetLineColor(kRed + 1);
         signalFunction->SetLineWidth(3);
         signalFunction->Draw("same");
@@ -598,6 +791,28 @@ void DrawDiagnostic(TCanvas* canvas,
         valleyLine->SetLineColor(kGray + 2);
         valleyLine->Draw("same");
     }
+
+    std::unique_ptr<TLine> pedestalSeedLine;
+    std::unique_ptr<TLine> signalSeedLine;
+    if (point.pedestalSeedBin > 0) {
+        const double seedX = histogram->GetBinCenter(point.pedestalSeedBin);
+        pedestalSeedLine.reset(new TLine(seedX, 0.0, seedX,
+                                         histogram->GetMaximum()));
+        pedestalSeedLine->SetLineStyle(3);
+        pedestalSeedLine->SetLineColor(kBlue + 1);
+        pedestalSeedLine->Draw("same");
+    }
+    if (point.signalSeedBin > 0) {
+        const double seedX = histogram->GetBinCenter(point.signalSeedBin);
+        signalSeedLine.reset(new TLine(seedX, 0.0, seedX,
+                                       histogram->GetMaximum()));
+        signalSeedLine->SetLineStyle(3);
+        signalSeedLine->SetLineColor(kRed + 1);
+        signalSeedLine->Draw("same");
+    }
+
+    text.SetTextColor(kBlack);
+    text.SetTextSize(0.030);
 
     double y = 0.87;
     if (point.pedestal.ok) {
@@ -621,7 +836,6 @@ void DrawDiagnostic(TCanvas* canvas,
                             point.separationError));
         y -= 0.045;
     }
-
     if (!point.ok) {
         text.SetTextColor(kRed + 1);
         text.DrawLatex(0.12, 0.92, Form("CHECK: %s", point.message.Data()));
@@ -635,10 +849,15 @@ void WriteCsvHeader(std::ofstream& output)
     output
         << "run,plane,paddle,voltage_offset_from_default_V,"
         << "histogram,histogram_path,found,two_peaks_found,fit_ok,"
+        << "pedestal_seed_bin,pedestal_seed_channel,"
+        << "signal_seed_bin,signal_seed_channel,"
+        << "signal_search_start_bin,signal_search_end_bin,seed_method,"
         << "pedestal_peak,pedestal_peak_uncertainty,pedestal_sigma,"
-        << "pedestal_sigma_uncertainty,pedestal_fit_status,"
+        << "pedestal_sigma_uncertainty,pedestal_background,"
+        << "pedestal_background_slope,pedestal_fit_status,"
         << "signal_peak,signal_peak_uncertainty,signal_sigma,"
-        << "signal_sigma_uncertainty,signal_fit_status,"
+        << "signal_sigma_uncertainty,signal_background,"
+        << "signal_background_slope,signal_fit_status,"
         << "peak_separation,peak_separation_uncertainty,message\n";
 }
 
@@ -654,15 +873,26 @@ void WriteCsvRow(std::ofstream& output, const ScanPoint& point)
            << (point.found ? 1 : 0) << ","
            << (point.peaksFound ? 1 : 0) << ","
            << (point.ok ? 1 : 0) << ","
+           << point.pedestalSeedBin << ","
+           << point.pedestalSeedX << ","
+           << point.signalSeedBin << ","
+           << point.signalSeedX << ","
+           << point.signalSearchStartBin << ","
+           << point.signalSearchEndBin << ","
+           << CsvSafe(point.seedMethod) << ","
            << point.pedestal.mean << ","
            << point.pedestal.meanError << ","
            << point.pedestal.sigma << ","
            << point.pedestal.sigmaError << ","
+           << point.pedestal.backgroundAtPeak << ","
+           << point.pedestal.backgroundSlope << ","
            << point.pedestal.status << ","
            << point.signal.mean << ","
            << point.signal.meanError << ","
            << point.signal.sigma << ","
            << point.signal.sigmaError << ","
+           << point.signal.backgroundAtPeak << ","
+           << point.signal.backgroundSlope << ","
            << point.signal.status << ","
            << point.separation << ","
            << point.separationError << ","
@@ -686,7 +916,8 @@ void DrawPlaneSummary(const TString& plane,
 
     const int numberOfPaddles = lastPaddle - firstPaddle + 1;
     const int columns = (plane == "BHD") ? 3 : 4;
-    const int rows = static_cast<int>(std::ceil(numberOfPaddles / static_cast<double>(columns)));
+    const int rows = static_cast<int>(std::ceil(
+        numberOfPaddles / static_cast<double>(columns)));
 
     TCanvas canvas(Form("canvas_%s_hv_scan", plane.Data()),
                    Form("%s QDC peak separation versus high voltage", plane.Data()),
@@ -696,6 +927,18 @@ void DrawPlaneSummary(const TString& plane,
 
     std::vector<TGraphErrors*> graphs;
     std::vector<TF1*> lineFits;
+
+    const TString slopeCsvName = Form("%s/%s_QDC_HV_linear_fit_parameters.csv",
+                                      outputDirectory.Data(), plane.Data());
+    std::ofstream slopeCsv;
+    if (fitLinear) {
+        slopeCsv.open(slopeCsvName.Data());
+        if (slopeCsv.is_open()) {
+            slopeCsv << "plane,paddle,n_points,fit_status,intercept_channels,"
+                     << "intercept_uncertainty_channels,slope_channels_per_V,"
+                     << "slope_uncertainty_channels_per_V,chi2,ndf\n";
+        }
+    }
 
     for (int paddle = firstPaddle; paddle <= lastPaddle; ++paddle) {
         const int padNumber = paddle - firstPaddle + 1;
@@ -710,7 +953,12 @@ void DrawPlaneSummary(const TString& plane,
             missing.SetNDC(kTRUE);
             missing.SetTextSize(0.05);
             missing.DrawLatex(0.20, 0.55,
-                              Form("No data for %s paddle %02d", plane.Data(), paddle));
+                              Form("No data for %s paddle %02d",
+                                   plane.Data(), paddle));
+            if (slopeCsv.is_open()) {
+                slopeCsv << plane << "," << paddle
+                         << ",0,-999,nan,nan,nan,nan,nan,nan\n";
+            }
             continue;
         }
 
@@ -742,6 +990,10 @@ void DrawPlaneSummary(const TString& plane,
             missing.DrawLatex(0.13, 0.55,
                               Form("No successful fits for %s paddle %02d",
                                    plane.Data(), paddle));
+            if (slopeCsv.is_open()) {
+                slopeCsv << plane << "," << paddle
+                         << ",0,-998,nan,nan,nan,nan,nan,nan\n";
+            }
             continue;
         }
 
@@ -761,7 +1013,10 @@ void DrawPlaneSummary(const TString& plane,
         graph->SetMarkerStyle(20);
         graph->SetMarkerSize(1.15);
         graph->SetLineWidth(2);
-        graph->Draw("APL");
+
+        // Draw points and error bars only.  The trend is represented by the
+        // uncertainty-weighted linear fit, not by dot-to-dot segments.
+        graph->Draw("AP");
         graph->GetXaxis()->SetLimits(-0.70, 1.20);
         graph->GetXaxis()->SetNdivisions(505);
         graph->GetXaxis()->SetTitleSize(0.047);
@@ -770,14 +1025,46 @@ void DrawPlaneSummary(const TString& plane,
         graph->GetYaxis()->SetLabelSize(0.040);
         graph->GetYaxis()->SetTitleOffset(1.35);
 
+        int lineStatus = -997;
+        double intercept = std::numeric_limits<double>::quiet_NaN();
+        double interceptError = std::numeric_limits<double>::quiet_NaN();
+        double slope = std::numeric_limits<double>::quiet_NaN();
+        double slopeError = std::numeric_limits<double>::quiet_NaN();
+        double chi2 = std::numeric_limits<double>::quiet_NaN();
+        double ndf = std::numeric_limits<double>::quiet_NaN();
+
         if (fitLinear && x.size() >= 3) {
-            TF1* line = new TF1(Form("line_%s_paddle%02d", plane.Data(), paddle),
+            TF1* line = new TF1(Form("line_%s_paddle%02d",
+                                     plane.Data(), paddle),
                                 "pol1", -0.5, 1.0);
             lineFits.push_back(line);
             line->SetLineStyle(2);
-            line->SetLineWidth(2);
-            graph->Fit(line, "QRN");
-            line->Draw("same");
+            line->SetLineWidth(3);
+
+            TFitResultPtr lineResult = graph->Fit(line, "QRSN");
+            lineStatus = static_cast<int>(lineResult);
+            intercept = line->GetParameter(0);
+            interceptError = line->GetParError(0);
+            slope = line->GetParameter(1);
+            slopeError = line->GetParError(1);
+            chi2 = line->GetChisquare();
+            ndf = line->GetNDF();
+
+            if (lineStatus == 0) line->Draw("same");
+        }
+
+        if (slopeCsv.is_open()) {
+            slopeCsv << plane << ","
+                     << paddle << ","
+                     << x.size() << ","
+                     << lineStatus << ","
+                     << std::fixed << std::setprecision(6)
+                     << intercept << ","
+                     << interceptError << ","
+                     << slope << ","
+                     << slopeError << ","
+                     << chi2 << ","
+                     << ndf << "\n";
         }
 
         gPad->Modified();
@@ -790,16 +1077,33 @@ void DrawPlaneSummary(const TString& plane,
         TLatex runLabel;
         runLabel.SetTextSize(0.025);
         runLabel.SetTextAlign(21);
-
         for (std::size_t i = 0; i < x.size(); ++i) {
-            runLabel.DrawLatex(x[i], y[i] + 0.035 * ySpan, Form("%d", runs[i]));
+            runLabel.DrawLatex(x[i],
+                               y[i] + 0.035 * ySpan,
+                               Form("%d", runs[i]));
         }
 
         TLatex note;
         note.SetNDC(kTRUE);
-        note.SetTextSize(0.028);
-        note.DrawLatex(0.16, 0.91, "Point labels are run numbers");
+        note.SetTextSize(0.026);
+        note.DrawLatex(0.16, 0.92, "Point labels are run numbers");
+
+        if (fitLinear && lineStatus == 0) {
+            note.SetTextSize(0.030);
+            note.DrawLatex(0.16, 0.86,
+                           Form("slope = %.2f #pm %.2f channels/V",
+                                slope, slopeError));
+            note.DrawLatex(0.16, 0.81,
+                           Form("#chi^{2}/ndf = %.2f/%d",
+                                chi2, static_cast<int>(ndf)));
+        } else if (fitLinear) {
+            note.SetTextColor(kRed + 1);
+            note.DrawLatex(0.16, 0.86,
+                           Form("linear fit unavailable (status %d)", lineStatus));
+        }
     }
+
+    if (slopeCsv.is_open()) slopeCsv.close();
 
     canvas.cd();
     const TString pngName = Form("%s/%s_QDC_peak_separation_vs_HV.png",
@@ -808,22 +1112,23 @@ void DrawPlaneSummary(const TString& plane,
                                  outputDirectory.Data(), plane.Data());
     canvas.SaveAs(pngName.Data());
     canvas.SaveAs(pdfName.Data());
-
-    // The canvas/pads retain the drawn ROOT objects until this function returns.
-    // Their total number is small (at most eight graphs and eight optional lines).
 }
 
 } // namespace BH_QDC_HVScan_Detail
 
 void BH_QDC_HVScan(const char* inputDir = ".",
                    const char* outputDir = "BH_QDC_HV_scan",
-                   int defaultRun = 33566,
+                   int defaultRun = 35566,
                    bool saveDiagnostics = true,
-                   bool fitLinear = false)
+                   bool fitLinear = true)
 {
     using namespace BH_QDC_HVScan_Detail;
 
     gROOT->SetBatch(kTRUE);
+    std::cout << "BH_QDC_HVScan algorithm: " << kAlgorithmVersion << "\n";
+    std::cout << "Default run: " << defaultRun
+              << "; linear fits: " << (fitLinear ? "enabled" : "disabled")
+              << "\n" << std::endl;
     gStyle->SetOptStat(0);
     gStyle->SetOptFit(1111);
     gStyle->SetFitFormat("6.2f");
@@ -944,7 +1249,9 @@ void BH_QDC_HVScan(const char* inputDir = ".",
                       << Form("%02d", paddle)
                       << ": ";
             if (point.ok) {
-                std::cout << "pedestal = " << std::fixed << std::setprecision(2)
+                std::cout << "seeds = " << std::fixed << std::setprecision(1)
+                          << point.pedestalSeedX << " / " << point.signalSeedX
+                          << "; pedestal = " << std::setprecision(2)
                           << point.pedestal.mean << " +/- " << point.pedestal.meanError
                           << ", signal = " << point.signal.mean
                           << " +/- " << point.signal.meanError
@@ -987,6 +1294,13 @@ void BH_QDC_HVScan(const char* inputDir = ".",
               << outputDirectory << "/BHD_QDC_peak_separation_vs_HV.png\n"
               << "BHC summary:              "
               << outputDirectory << "/BHC_QDC_peak_separation_vs_HV.png\n";
+
+    if (fitLinear) {
+        std::cout << "BHD slope CSV:            "
+                  << outputDirectory << "/BHD_QDC_HV_linear_fit_parameters.csv\n"
+                  << "BHC slope CSV:            "
+                  << outputDirectory << "/BHC_QDC_HV_linear_fit_parameters.csv\n";
+    }
 
     if (saveDiagnostics) {
         std::cout << "Fit diagnostics:          " << diagnosticsPdf << "\n";
